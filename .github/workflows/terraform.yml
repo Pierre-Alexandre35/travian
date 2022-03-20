@@ -6,7 +6,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
