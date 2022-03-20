@@ -2,22 +2,20 @@ name: Deploy Terraform
 
 on: [push]
 jobs:
-  build:
-    name: Cloud Run Deployment
+  Terraform:
+
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@master
-
-      - name: Setup GCP Service Account
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Check out code
+        uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1.2.1
+        name: Setup Terraform
         with:
-          version: 'latest'
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-
+          terraform_version: 1.0.8
+          terraform_wrapper: false
+          # more setup-terraform configuration. See https://github.com/hashicorp/setup-terraform#usage
 
       - name: Terraform init
         id: init
@@ -25,10 +23,8 @@ jobs:
           terraform --version
           terraform init
           terraform validate
-        working-directory: travian/infrastructure
 
       - name: Terraform plan
         id: plan
         run: |
           terraform plan
-        working-directory: travian/infrastructure
