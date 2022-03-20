@@ -3,41 +3,79 @@ name: Deploy Infrastructure
 on:
   push:
     branches:
-      - master
+      - main
+env:
+  tf_version: 'latest'
+  tf_working_dir: 'travian/infrastructure'
 
 jobs:
-  tf_fmt:
-    name: Deploy Site
+  terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
     steps:
+      - name: Set GCP environment
+        id: set_gcp_env
+        run: echo ::set-env name=BRANCH_NAME::$(echo ${GITHUB_BASE_REF#refs/heads/})
 
-    - name: Checkout Repo
-      uses: actions/checkout@v1
+      - name: configure gcloud
+        id: config_gcloud
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: "latest"
+          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Terraform Init
-      uses: hashicorp/terraform-github-actions/init@v0.4.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TF_ACTION_WORKING_DIR: 'terraform'
-        AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: checkout
+        id: checkout_code
+        uses: actions/checkout@v2
 
-    - name: Terraform Validate
-      uses: hashicorp/terraform-github-actions/validate@v0.3.7
+      - name: set GCP project
+        id: config_project
+        run: gcloud config set project xxxx
 
-    - name: Terraform Apply
-      uses: hashicorp/terraform-github-actions/apply@v0.4.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TF_ACTION_WORKING_DIR: 'terraform'
-        AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: "Decrypt key service account"
+        id: decrypt_SA
+        run: gcloud secrets versions access latest --secret=test-terraform-key --project="xxxx" 
+        working-directory: "environments/${{ env.BRANCH_NAME }}"
 
-    - name: Sync S3
-      uses: jakejarvis/s3-sync-action@master
-      env:
-        SOURCE_DIR: './src'
-        AWS_REGION: 'us-east-1'
-        AWS_S3_BUCKET: '[BUCKET_NAME_HERE]'
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: "Terraform Init"
+        id: terraform_init
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
+          tf_actions_comment: "false"
+          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
+          tf_actions_subcommand: init
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
+      - name: "Terraform Validate"
+        id: terraform_validate
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
+          tf_actions_comment: "false"
+          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
+          tf_actions_subcommand: validate
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}} 
+      - name: "Terraform Plan"
+        id: terraform_plan
+        uses: ops18/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
+          tf_actions_comment: "false"
+          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
+          tf_actions_subcommand: plan
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
+          
+      - name: "Terraform Apply"
+        uses: ops18/terraform-github-actions@master
+        id: terraform_apply
+        with:
+          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
+          tf_actions_comment: "false"
+          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
+          tf_actions_subcommand: apply
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
