@@ -1,5 +1,12 @@
 # ------- Providers -------
 provider "google" {
-  profile = var.gcp_project
+  project = var.gcp_project_id
   region  = var.gcp_default_region
+}
+
+resource "google_storage_bucket" "static-site" {
+  name          = "iesqdsqdee"
+  location      = "EU"
+  force_destroy = true
+
 }

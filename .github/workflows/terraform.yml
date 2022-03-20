@@ -1,81 +1,32 @@
-name: Deploy Infrastructure
+name: Deploy Terraform
 
-on:
-  push:
-    branches:
-      - main
-env:
-  tf_version: 'latest'
-  tf_working_dir: 'travian/infrastructure'
-
+on: [push]
 jobs:
-  terraform:
-    name: 'Terraform'
+  Terraform:
+
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
     steps:
-      - name: Set GCP environment
-        id: set_gcp_env
-        run: echo ::set-env name=BRANCH_NAME::$(echo ${GITHUB_BASE_REF#refs/heads/})
-
-      - name: configure gcloud
-        id: config_gcloud
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          version: "latest"
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-
-      - name: checkout
-        id: checkout_code
+      - name: Check out code
         uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1.2.1
+        name: Setup Terraform
+        with:
+          terraform_version: 1.1.7
+          terraform_wrapper: false
+          # more setup-terraform configuration. See https://github.com/hashicorp/setup-terraform#usage
 
-      - name: set GCP project
-        id: config_project
-        run: gcloud config set project xxxx
+      - name: Terraform init
+        id: init
+        run: |
+          terraform --version
+          terraform init
+          terraform validate
+        working-directory: travian/infrastructure
 
-      - name: "Decrypt key service account"
-        id: decrypt_SA
-        run: gcloud secrets versions access latest --secret=test-terraform-key --project="xxxx" 
-        working-directory: "environments/${{ env.BRANCH_NAME }}"
-
-      - name: "Terraform Init"
-        id: terraform_init
-        uses: ops18/terraform-github-actions@master
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_comment: "false"
-          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
-          tf_actions_subcommand: init
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
-      - name: "Terraform Validate"
-        id: terraform_validate
-        uses: ops18/terraform-github-actions@master
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_comment: "false"
-          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
-          tf_actions_subcommand: validate
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}} 
-      - name: "Terraform Plan"
-        id: terraform_plan
-        uses: ops18/terraform-github-actions@master
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_comment: "false"
-          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
-          tf_actions_subcommand: plan
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
-          
-      - name: "Terraform Apply"
-        uses: ops18/terraform-github-actions@master
-        id: terraform_apply
-        with:
-          tf_actions_version: ${{ env.TERRAFORM_VERSION }}
-          tf_actions_comment: "false"
-          tf_actions_working_dir: environments/${{ env.BRANCH_NAME }}
-          tf_actions_subcommand: apply
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY}}
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan
+        working-directory: travian/infrastructure
