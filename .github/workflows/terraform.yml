@@ -23,3 +23,8 @@ jobs:
           terraform --version
           terraform init
           terraform validate
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan
