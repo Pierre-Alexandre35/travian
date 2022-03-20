@@ -23,8 +23,10 @@ jobs:
           terraform --version
           terraform init
           terraform validate
+          working-directory: travian/infrastructure
 
       - name: Terraform plan
         id: plan
         run: |
           terraform plan
+          working-directory: travian/infrastructure
