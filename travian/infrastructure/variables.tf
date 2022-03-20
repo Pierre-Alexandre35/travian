@@ -1,7 +1,6 @@
-variable "gcp_project" {
+variable "gcp_project_id" {
   description = "GCP project ID"
   type        = string
-  default = "atf-sbx-mousset"
 }
 
 variable "gcp_default_region" {
