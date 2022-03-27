@@ -17,7 +17,11 @@ def create_app() -> FastAPI:
     root_app.include_router(
     auth_router,
     prefix="/api/v1",
+<<<<<<< HEAD
     tags=["auth"],
+=======
+    tags=["auth_router"],
+>>>>>>> 1852f274b98ba05f84e7cc7257d5a54542ce6353
     )
     @root_app.get("/")
     async def root():
