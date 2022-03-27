@@ -45,20 +45,20 @@ class Database:
         cur.close()
         return records
 
-    def select_rows_dict_cursor(self, query):
+    def select_rows_dict_cursor(self, query, parameters=None):
         """Run SELECT query and return dictionaries."""
         self.connect()
         with self.conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(query)
+            cur.execute(query, parameters)
             records = cur.fetchall()
         cur.close()
         return records
 
-    def update_rows(self, query):
+    def update_rows(self, query, parameters= None):
         """Run a SQL query to update rows in table."""
         self.connect()
         with self.conn.cursor() as cur:
-            cur.execute(query)
+            cur.execute(query, parameters)
             self.conn.commit()
             cur.close()
             return f"{cur.rowcount} rows affected."
