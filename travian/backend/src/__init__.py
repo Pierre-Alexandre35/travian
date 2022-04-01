@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 from src.api.v1.village import village_router
 from src.api.v1.auth import auth_router
-
-# Globally accessible libraries
-#db = SQLAlchemy()
-#r = FlaskRedis()
+from src.core.config import *
 
 
 def create_app() -> FastAPI:
@@ -23,3 +20,5 @@ def create_app() -> FastAPI:
     async def root():
         return {"message": "Hello World"}
     return root_app
+
+

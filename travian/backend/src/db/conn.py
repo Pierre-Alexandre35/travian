@@ -62,3 +62,6 @@ class Database:
             self.conn.commit()
             cur.close()
             return f"{cur.rowcount} rows affected."
+
+
+    

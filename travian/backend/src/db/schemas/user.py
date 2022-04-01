@@ -3,5 +3,8 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     username: str
-    password: bytes
-    salt: bytes
+    password: str
+
+
+class UserCreate(User):
+    tmp: str
