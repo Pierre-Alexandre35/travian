@@ -1,18 +1,11 @@
-<<<<<<< HEAD
 from numpy import byte
 from pydantic import BaseModel
 
+
 class User(BaseModel):
     username: str
-    password: bytes
-    salt: bytes
-=======
-from pydantic import BaseModel
+    password: str
 
-class User(BaseModel):
-    id: str
-    email: str
-    pwd: bytes
-    salt: bytes
 
->>>>>>> 1852f274b98ba05f84e7cc7257d5a54542ce6353
+class UserCreate(User):
+    tmp: str
