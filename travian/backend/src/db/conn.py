@@ -1,17 +1,18 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 
+
 class Database:
     """PostgreSQL Database class."""
 
     def __init__(
-            self,
-            DATABASE_HOST,
-            DATABASE_USERNAME,
-            DATABASE_PASSWORD,
-            DATABASE_PORT,
-            DATABASE_NAME
-        ):
+        self,
+        DATABASE_HOST,
+        DATABASE_USERNAME,
+        DATABASE_PASSWORD,
+        DATABASE_PORT,
+        DATABASE_NAME,
+    ):
         self.host = DATABASE_HOST
         self.username = DATABASE_USERNAME
         self.password = DATABASE_PASSWORD
@@ -28,13 +29,13 @@ class Database:
                     user=self.username,
                     password=self.password,
                     port=self.port,
-                    dbname=self.dbname
+                    dbname=self.dbname,
                 )
             except psycopg2.DatabaseError as e:
                 print(e)
                 raise e
             finally:
-                print('Connection opened successfully.')
+                print("Connection opened successfully.")
 
     def select_rows(self, query):
         """Run a SQL query to select rows from table."""
@@ -54,7 +55,7 @@ class Database:
         cur.close()
         return records
 
-    def update_rows(self, query, parameters= None):
+    def update_rows(self, query, parameters=None):
         """Run a SQL query to update rows in table."""
         self.connect()
         with self.conn.cursor() as cur:
@@ -62,6 +63,3 @@ class Database:
             self.conn.commit()
             cur.close()
             return f"{cur.rowcount} rows affected."
-
-
-    

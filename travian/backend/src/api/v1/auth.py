@@ -5,6 +5,7 @@ from src.db.utils import get_db
 
 auth_router = r = APIRouter()
 
+
 @r.post("/register")
 async def register(user: User):
     return user.username
