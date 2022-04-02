@@ -1,14 +1,11 @@
-from fastapi import APIRouter, Request, Depends, Response, encoders
-
+from fastapi import APIRouter
 
 village_router = r = APIRouter()
 
 
-@r.get(
-    "/users",
-)
-async def users_list():
+@r.get("/")
+async def home():
     """
-    Get all users
+    Hello World
     """
-    return {"test": "just a test"}
+    return {"message": "hello user"}
