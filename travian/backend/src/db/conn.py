@@ -54,6 +54,15 @@ class Database:
         cur.close()
         return records
 
+    def select_first_record(self, query, parameters=None):
+        """Run SELECT query and return dictionaries."""
+        self.connect()
+        cur = self.conn.cursor(cursor_factory=DictCursor)
+        cur.execute(query, parameters)
+        record = cur.fetchone()
+        cur.close()
+        return record
+
     def update_rows(self, query, parameters=None):
         """Run a SQL query to update rows in table."""
         self.connect()
