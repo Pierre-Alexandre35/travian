@@ -1,13 +1,13 @@
-from src.db.schemas import user
+from src.db.schemas.user import User
 from src.db.conn import Database
-from src.core.security import password_hash, password_verify
+from src.core.security import password_hash
 
 
-def create_user(user: user.User, db: Database):
+def create_user(user: User, session: Database):
     hashed_password, salt = password_hash(user.password)
     sql = """
-        INSERT INTO userss (username, password, salt)
+        INSERT INTO userss (username, password, salt) 
         VALUES (%s, %s, %s)
         """
     params = (user.username, hashed_password, salt)
-    db.update_rows(sql, params)
+    session.update_rows(sql, params)

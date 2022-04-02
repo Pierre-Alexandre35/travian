@@ -1,4 +1,3 @@
-from numpy import byte
 from pydantic import BaseModel
 
 

@@ -7,17 +7,17 @@ class Database:
 
     def __init__(
         self,
-        DATABASE_HOST,
-        DATABASE_USERNAME,
-        DATABASE_PASSWORD,
-        DATABASE_PORT,
-        DATABASE_NAME,
+        host,
+        username,
+        password,
+        port,
+        dbname,
     ):
-        self.host = DATABASE_HOST
-        self.username = DATABASE_USERNAME
-        self.password = DATABASE_PASSWORD
-        self.port = DATABASE_PORT
-        self.dbname = DATABASE_NAME
+        self.host = host
+        self.username = username
+        self.password = password
+        self.port = port
+        self.dbname = dbname
         self.conn = None
 
     def connect(self):
@@ -31,9 +31,8 @@ class Database:
                     port=self.port,
                     dbname=self.dbname,
                 )
-            except psycopg2.DatabaseError as e:
-                print(e)
-                raise e
+            except psycopg2.DatabaseError as psycopg2_err:
+                raise psycopg2_err
             finally:
                 print("Connection opened successfully.")
 
