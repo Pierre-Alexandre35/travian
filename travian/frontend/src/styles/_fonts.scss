@@ -1,0 +1,10 @@
+// Sans Serif
+
+@font-face {
+    font-weight: 500;
+    font-family: 'Inter';
+    font-style: italic;
+    src: url('../assets/fonts/Inter-MediumItalic.woff2') format('woff2'),
+        url('../assets/fonts/Inter-MediumItalic.woff') format('woff');
+    font-display: block;
+}
