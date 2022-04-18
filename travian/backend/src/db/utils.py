@@ -8,7 +8,7 @@ from src.core.config import (
 )
 
 
-def get_db():
+def get_db() -> Database:
     yield Database(
         DATABASE_HOST,
         DATABASE_USERNAME,

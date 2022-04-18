@@ -1,5 +1,5 @@
 import psycopg2
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, DictRow
 
 
 class Database:
@@ -20,7 +20,7 @@ class Database:
         self.dbname = dbname
         self.conn = None
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect to a Postgres database."""
         if self.conn is None:
             try:
@@ -36,7 +36,7 @@ class Database:
             finally:
                 print("Connection opened successfully.")
 
-    def select_rows(self, query):
+    def select_rows(self, query: str) -> list[tuple]:
         """Run a SQL query to select rows from table."""
         self.connect()
         with self.conn.cursor() as cur:
@@ -45,7 +45,7 @@ class Database:
         cur.close()
         return records
 
-    def select_rows_dict_cursor(self, query, parameters=None):
+    def select_rows_dict_cursor(self, query: str, parameters=None) -> list[DictRow]:
         """Run SELECT query and return dictionaries."""
         self.connect()
         with self.conn.cursor(cursor_factory=DictCursor) as cur:
@@ -54,7 +54,7 @@ class Database:
         cur.close()
         return records
 
-    def select_first_record(self, query, parameters=None):
+    def select_first_record(self, query: str, parameters=None) -> DictRow:
         """Run SELECT query and return dictionaries."""
         self.connect()
         cur = self.conn.cursor(cursor_factory=DictCursor)
@@ -63,7 +63,7 @@ class Database:
         cur.close()
         return record
 
-    def update_rows(self, query, parameters=None):
+    def update_rows(self, query: str, parameters=None) -> str:
         """Run a SQL query to update rows in table."""
         self.connect()
         with self.conn.cursor() as cur:
