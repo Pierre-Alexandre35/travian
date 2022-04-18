@@ -33,9 +33,6 @@ def get_user_by_username(session: Database, username: str) -> UserAuth:
         """
     params = [username]
     records = session.select_rows_dict_cursor(sql, params)
-    print(1111)
-    print(type(records))
-    print(type(records[0]))
 
     return UserAuth(
         username=records[0][0], password=bytes(records[0][1]), salt=bytes(records[0][2])

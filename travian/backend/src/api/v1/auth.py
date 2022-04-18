@@ -28,8 +28,8 @@ async def register(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@r.post("/login")
-async def login(
+@r.post("/token")
+async def token(
     session=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     user = authenticate_user(session, form_data.username, form_data.password)
@@ -40,7 +40,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"sub": user.email},
+        data={"sub": user.username},
         expires_delta=timedelta(
             minutes=30,
         ),
