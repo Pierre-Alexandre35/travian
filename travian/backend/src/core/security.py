@@ -2,8 +2,13 @@ import hashlib
 import os
 import hmac
 from datetime import datetime, timedelta
-
 import jwt
+from fastapi.security import OAuth2PasswordBearer
+from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/token", scheme_name="admin_oauth2_schema"
+)
 
 
 def password_hash(password: str) -> tuple[bytes, bytes]:
@@ -25,5 +30,5 @@ def create_access_token(*, data: dict, expires_delta: timedelta = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, "ezez", algorithm="HS256")
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=AUTH_TOKEN_ALGO)
     return encoded_jwt

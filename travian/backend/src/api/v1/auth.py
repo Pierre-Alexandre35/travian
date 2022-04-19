@@ -2,7 +2,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from src.core.auth import sign_up_new_user, authenticate_user
+from src.core.auth import sign_up_new_user, authenticate_user, get_current_user
 from src.core.security import create_access_token
 from src.db.utils import get_db
 
@@ -28,7 +28,7 @@ async def register(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@r.post("/login")
+@r.post("/token")
 async def login(
     session=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
@@ -40,9 +40,19 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"sub": user.email},
+        data={"sub": user.username},
         expires_delta=timedelta(
             minutes=30,
         ),
     )
+    print(access_token)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@r.get("/users/me")
+async def user_me(current_user=Depends(get_current_user)):
+    """
+    Get own user
+    """
+
+    return str(1)
