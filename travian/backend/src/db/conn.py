@@ -19,6 +19,7 @@ class Database:
         self.port = port
         self.dbname = dbname
         self.conn = None
+        psycopg2.extras.register_uuid()
 
     def connect(self) -> None:
         """Connect to a Postgres database."""

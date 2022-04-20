@@ -3,11 +3,23 @@ from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
-    username: str
+    """Input required to create a new User"""
+
+    email: str
     password: str
 
 
 class UserAuth(BaseModel):
-    username: str
+    """Input required to authenticate a returning user"""
+
+    uuid: str
+    email: str
     password: bytes
     salt: bytes
+
+
+class UserJWTToken(BaseModel):
+    """current authenticated User data stored in the JWT Web Token"""
+
+    uuid: str
+    email: str
