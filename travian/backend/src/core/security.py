@@ -6,9 +6,7 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/token", scheme_name="admin_oauth2_schema"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 
 def password_hash(password: str) -> tuple[bytes, bytes]:
@@ -23,7 +21,7 @@ def password_verify(pw_hash: bytes, salt: bytes, password: str) -> bool:
     )
 
 
-def create_access_token(*, data: dict, expires_delta: timedelta = None):
+def create_access_token(*, data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta

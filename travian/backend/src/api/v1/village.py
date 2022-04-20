@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 village_router = r = APIRouter()
 
@@ -6,6 +6,6 @@ village_router = r = APIRouter()
 @r.get("/")
 async def home():
     """
-    Hello World
+    Test
     """
-    return {"message": "hello user"}
+    return {"message": "hello village"}

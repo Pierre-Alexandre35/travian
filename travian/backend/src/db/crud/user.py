@@ -1,39 +1,48 @@
-from src.db.schemas.user import UserCreate, UserAuth
+import datetime
+from uuid import uuid4
+from src.db.schemas.user import UserAuth, UserCreate, UserJWTToken
 from src.db.conn import Database
 from src.core.security import password_hash
 
 
-def create_user(session: Database, user: UserCreate) -> UserCreate:
+def create_user(session: Database, user: UserCreate) -> UserJWTToken:
+    user_id = str(uuid4())
+    now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     hashed_password, salt = password_hash(user.password)
+    is_active = True
+    is_superuser = False
     sql = """
-        INSERT INTO userss (username, password, salt) 
-        VALUES (%s, %s, %s)
+        INSERT INTO players (id, email, active, superuser, created_on, password, password_salt) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-    params = (user.username, hashed_password, salt)
+    params = (user_id, user.email, is_active, is_superuser, now, hashed_password, salt)
+    print(params)
     session.update_rows(sql, params)
-    return user
+    return UserJWTToken(user_id, user.email)
 
 
-def user_exits(session: Database, username: str) -> bool:
+def user_exits(session: Database, email: str) -> bool:
     sql = """
         SELECT COUNT(id) 
-        FROM userss 
-        WHERE username = (%s)
+        FROM players 
+        WHERE email = (%s)
         """
-    params = [username]
+    params = [email]
     records = session.select_rows_dict_cursor(sql, params)
-    return records[0][0] == 1
+    return records[0][0]
 
 
-def get_user_by_username(session: Database, username: str) -> UserAuth:
+def get_user_by_email(session: Database, email: str) -> UserAuth:
     sql = """
-        SELECT username, password, salt
-        FROM userss 
-        WHERE username = (%s)
+        SELECT *
+        FROM players 
+        WHERE email = (%s)
         """
-    params = [username]
+    params = [email]
     records = session.select_rows_dict_cursor(sql, params)
-
     return UserAuth(
-        username=records[0][0], password=bytes(records[0][1]), salt=bytes(records[0][2])
+        uuid=str(records[0][0]),
+        email=records[0][1],
+        password=bytes(records[0][5]),
+        salt=bytes(records[0][6]),
     )
