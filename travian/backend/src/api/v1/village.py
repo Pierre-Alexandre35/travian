@@ -1,11 +1,8 @@
 from fastapi import APIRouter
 
-village_router = r = APIRouter()
+village_router = village = APIRouter()
 
 
-@r.get("/")
-async def home():
-    """
-    Test
-    """
+@village.post("/new-village")
+async def new_village():
     return {"message": "hello village"}
