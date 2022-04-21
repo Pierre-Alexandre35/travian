@@ -6,25 +6,24 @@ from src.core.security import password_hash
 
 
 def create_user(session: Database, user: UserCreate) -> UserJWTToken:
-    user_id = str(uuid4())
+    uuid = str(uuid4())
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     hashed_password, salt = password_hash(user.password)
     is_active = True
     is_superuser = False
     sql = """
-        INSERT INTO players (id, email, active, superuser, created_on, password, password_salt) 
+        INSERT INTO users (uuid, email, active, superuser, created_on, password, password_salt) 
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-    params = (user_id, user.email, is_active, is_superuser, now, hashed_password, salt)
-    print(params)
+    params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt)
     session.update_rows(sql, params)
-    return UserJWTToken(user_id, user.email)
+    return UserJWTToken(uuid=uuid, email=user.email)
 
 
 def user_exits(session: Database, email: str) -> bool:
     sql = """
-        SELECT COUNT(id) 
-        FROM players 
+        SELECT COUNT(user_id) 
+        FROM users 
         WHERE email = (%s)
         """
     params = [email]
@@ -35,7 +34,7 @@ def user_exits(session: Database, email: str) -> bool:
 def get_user_by_email(session: Database, email: str) -> UserAuth:
     sql = """
         SELECT *
-        FROM players 
+        FROM users 
         WHERE email = (%s)
         """
     params = [email]
