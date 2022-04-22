@@ -1,12 +1,16 @@
-from fastapi import APIRouter
-from src.game.server import generate_new_server
+from fastapi import APIRouter, Depends
+from src.game.server import Server
+from src.db.utils import get_db
 
 admin_router = admin = APIRouter()
 
 
 @admin.post("/new-server")
-async def new_server(size: int):
+async def new_server(map_size: int, session=Depends(get_db)):
     """
     Test
     """
-    return {"message": "hello admin"}
+    current_server = Server(session=session, map_size=map_size)
+    current_server.generate()
+    current_server.deploy()
+    return {"message": current_server.positions}

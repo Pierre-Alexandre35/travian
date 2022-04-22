@@ -26,7 +26,8 @@ CREATE TABLE positions(
    x_pos INT,
    y_pos INT,
    is_empty BOOLEAN,
-   PRIMARY KEY (position_id)
+   PRIMARY KEY (position_id),
+   crop_type_id integer REFERENCES crop_types (crop_type_id),
 );
 
 
