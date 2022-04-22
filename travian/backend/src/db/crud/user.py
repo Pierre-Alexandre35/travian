@@ -33,7 +33,7 @@ def user_exits(session: Database, email: str) -> bool:
 
 def get_user_by_email(session: Database, email: str) -> UserAuth:
     sql = """
-        SELECT *
+        SELECT uuid, email, password, password_salt
         FROM users 
         WHERE email = (%s)
         """
@@ -42,6 +42,6 @@ def get_user_by_email(session: Database, email: str) -> UserAuth:
     return UserAuth(
         uuid=str(records[0][0]),
         email=records[0][1],
-        password=bytes(records[0][5]),
-        salt=bytes(records[0][6]),
+        password=bytes(records[0][2]),
+        salt=bytes(records[0][3]),
     )
