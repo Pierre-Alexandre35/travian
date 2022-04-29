@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite_doc=self.webpackChunkwebsite_doc||[]).push([[870],{1379:function(e){e.exports=JSON.parse('{"permalink":"/travian_browser_game/blog/tags/docusaurus","page":1,"postsPerPage":10,"totalPages":1,"totalCount":4,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
