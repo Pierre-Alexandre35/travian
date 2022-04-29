@@ -3,6 +3,6 @@ from fastapi import APIRouter
 village_router = village = APIRouter()
 
 
-@village.post("/new-village")
+@village.get("/village")
 async def new_village():
-    return {"message": "to-do"}
+    return {"message": "this is a new village"}
