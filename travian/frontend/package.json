@@ -7,12 +7,11 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "vue": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-service": "~4.5.15",
-    "@vue/compiler-sfc": "^3.0.0",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2"
+    "@vue/compiler-sfc": "^3.0.0"
   }
 }
