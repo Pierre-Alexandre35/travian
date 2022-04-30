@@ -12,6 +12,7 @@ class UserCreate(BaseModel):
 class UserAuth(BaseModel):
     """Input required to authenticate a returning user"""
 
+    user_id: int
     uuid: str
     email: str
     password: bytes
@@ -21,5 +22,5 @@ class UserAuth(BaseModel):
 class UserJWTToken(BaseModel):
     """current authenticated User data stored in the JWT Web Token"""
 
-    uuid: str
+    user_id: int
     email: str

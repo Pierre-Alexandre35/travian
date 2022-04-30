@@ -23,7 +23,7 @@ async def register(
         )
 
     access_token = create_access_token(
-        data={"uuid": new_user.uuid, "mail": new_user.email},
+        data={"user_id": new_user.user_id, "mail": new_user.email},
         expires_delta=timedelta(minutes=30),
     )
     return {"access_token": access_token, "token_type": "bearer"}
@@ -43,7 +43,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(
-        data={"uuid": user.uuid, "email": user.email},
+        data={"user_id": user.user_id, "email": user.email},
         expires_delta=timedelta(
             minutes=30,
         ),
