@@ -28,5 +28,16 @@ def authenticate_user(session: Database, email: str, password: str) -> UserCreat
 async def get_current_user(
     session=Depends(get_db), token: str = Depends(oauth2_scheme)
 ) -> None:
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTH_TOKEN_ALGO])
-    return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTH_TOKEN_ALGO])
+        email: str = payload.get("email")
+        user_id: str = payload.get("user_id")
+        if email is None:
+            print("credentials_exception")
+        token_data = UserJWTToken(user_id=user_id, email=email)
+    except jwt.PyJWTError:
+        print("credentials_exception")
+    user = get_user_by_email(session, token_data.email)
+    if user is None:
+        print("credentials_exception")
+    return user
