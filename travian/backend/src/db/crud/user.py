@@ -1,11 +1,13 @@
 import datetime
 from uuid import uuid4
-from src.db.schemas.user import UserAuth, UserCreate, UserJWTToken
+from src.db.schemas import user as user_schemas
 from src.db.conn import Database
 from src.core.security import password_hash
 
 
-def create_user(session: Database, user: UserCreate) -> UserJWTToken:
+def create_user(
+    session: Database, user: user_schemas.UserCreate
+) -> user_schemas.UserJWTToken:
     uuid = str(uuid4())
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     hashed_password, salt = password_hash(user.password)
@@ -17,7 +19,7 @@ def create_user(session: Database, user: UserCreate) -> UserJWTToken:
         """
     params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt)
     session.update_rows(sql, params)
-    return UserJWTToken(uuid=uuid, email=user.email)
+    return user_schemas.UserJWTToken(uuid=uuid, email=user.email)
 
 
 def user_exits(session: Database, email: str) -> bool:
@@ -31,7 +33,7 @@ def user_exits(session: Database, email: str) -> bool:
     return records[0][0]
 
 
-def get_user_by_email(session: Database, email: str) -> UserAuth:
+def get_user_by_email(session: Database, email: str) -> user_schemas.UserAuth:
     sql = """
         SELECT user_id, uuid, email, password, password_salt
         FROM users 
@@ -39,7 +41,7 @@ def get_user_by_email(session: Database, email: str) -> UserAuth:
         """
     params = [email]
     records = session.select_rows_dict_cursor(sql, params)
-    return UserAuth(
+    return user_schemas.UserAuth(
         user_id=records[0][0],
         uuid=str(records[0][1]),
         email=records[0][2],
