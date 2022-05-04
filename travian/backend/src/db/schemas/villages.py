@@ -1,4 +1,5 @@
 # pylint: disable=no-name-in-module, too-few-public-methods
+from turtle import position
 from pydantic import BaseModel
 
 
@@ -16,5 +17,6 @@ class UserVillages(BaseModel):
 
 
 class NewVillage(BaseModel):
-    owner_id: int
-    location_id: int
+    name: str
+    population: int
+    position_id: int
