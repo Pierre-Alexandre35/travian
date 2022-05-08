@@ -38,3 +38,22 @@ def create_village(
     )
     session.update_rows(sql, params)
     return "True"
+
+
+def get_village_infos(
+    village_id: str,
+    session: Database,
+):
+    sql = """
+        SELECT name, population, owner_id, position_id 
+        FROM villages 
+        WHERE village_id = (%s)
+        """
+    params = [village_id]
+    records = session.select_rows_dict_cursor(sql, params)
+    return village_schemas.VillageInfo(
+        name=records[0][0],
+        population=records[0][1],
+        owner_id=records[0][2],
+        location_id=records[0][3],
+    )

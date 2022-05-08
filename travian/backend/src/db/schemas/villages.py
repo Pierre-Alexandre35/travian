@@ -20,3 +20,10 @@ class NewVillage(BaseModel):
     name: str
     population: int
     position_id: int
+
+
+class VillageInfo(BaseModel):
+    name: str
+    population: int
+    owner_id: int
+    location_id: int

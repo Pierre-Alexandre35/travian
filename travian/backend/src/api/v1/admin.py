@@ -5,8 +5,8 @@ from src.db.utils import get_db
 admin_router = admin = APIRouter()
 
 
-@admin.post("/new-server")
-async def new_server(map_size: int, session=Depends(get_db)):
+@admin.post("/server")
+async def new_server(location: str, map_size: int, session=Depends(get_db)):
     """
     Test
     """
