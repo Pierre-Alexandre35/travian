@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite_doc=self.webpackChunkwebsite_doc||[]).push([[348],{4454:function(e){e.exports=JSON.parse('{"permalink":"/travian_browser_game/blog/tags/hola","page":1,"postsPerPage":10,"totalPages":1,"totalCount":1,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);

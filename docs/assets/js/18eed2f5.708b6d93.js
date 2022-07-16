@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite_doc=self.webpackChunkwebsite_doc||[]).push([[138],{3765:function(e){e.exports=JSON.parse('{"allTagsPath":"/travian_browser_game/blog/tags","name":"hello","count":2,"permalink":"/travian_browser_game/blog/tags/hello"}')}}]);

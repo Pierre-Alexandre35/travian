@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite_doc=self.webpackChunkwebsite_doc||[]).push([[832],{3292:function(a){a.exports=JSON.parse('{"allTagsPath":"/travian_browser_game/blog/tags","name":"docusaurus","count":4,"permalink":"/travian_browser_game/blog/tags/docusaurus"}')}}]);
