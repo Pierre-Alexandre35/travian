@@ -1,22 +1,6 @@
 <template>
   <div class="home">
     <NavBar />
-    <div class="presentation">
-      <article>
-        <h1>Join now</h1>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
-          impedit temporibus fugit, aliquid dicta iusto.
-        </p>
-      </article>
-      <div class="hero-container">
-        <h1>Join now</h1>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione
-          impedit temporibus fugit, aliquid dicta iusto.
-        </p>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -90,8 +74,8 @@ body {
 }
 
 .home {
-  background: url("../assets/home/background.jpeg") no-repeat center center
-    fixed;
+  background: url("../../assets/landing/background.jpeg") no-repeat center
+    center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

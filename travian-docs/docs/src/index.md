@@ -1,8 +1,8 @@
 ---
 home: true
-heroImage: https://v1.vuepress.vuejs.org/hero.png
+heroImage: https://s3-eu-central-1.amazonaws.com/euc-cdn.freshdesk.com/data/helpdesk/attachments/production/7073239381/original/GfqNzhvlBPYeG1vKF3yMqO4Fi1OnCGt_WA.png?1638833820
 tagline: 
-actionText: Quick Start →
+actionText: Quicdk Start →
 actionLink: /guide/
 features:
 - title: Feature 1 Title

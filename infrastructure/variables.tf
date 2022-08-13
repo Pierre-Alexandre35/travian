@@ -3,14 +3,21 @@ variable "domain_name" {
 }
 
 
+variable "domain_base_url" {
+  type = string
+}
+
+
 variable "project_id" {
   type = string
 }
+
 
 variable "cloudflare_email" {
   type        = string
   description = "clouflare email address"
 }
+
 
 variable "cloudflare_zone_id" {
   type        = string
@@ -18,9 +25,11 @@ variable "cloudflare_zone_id" {
   sensitive   = true
 }
 
+
 variable "env" {
   type = string
 }
+
 
 variable "cloudflare_api_token" {
   type        = string

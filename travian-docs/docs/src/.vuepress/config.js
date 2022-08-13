@@ -4,7 +4,7 @@ module.exports = {
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
-  title: 'Vuepress Docs Boilerplate',
+  title: 'Travian documentation',
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
@@ -54,6 +54,7 @@ module.exports = {
           children: [
             '',
             'using-vue',
+            'databases'
           ]
         }
       ],
