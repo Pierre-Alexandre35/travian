@@ -27,10 +27,3 @@ def village_infos(
     village_id: int, session=Depends(get_db), current_user=Depends(get_current_user)
 ):
     return get_village_infos(village_id, session)
-
-
-@village.get("/{village_id}/build/{building_id/")
-def village_infos(
-    village_id: int, session=Depends(get_db), current_user=Depends(get_current_user)
-):
-    return get_village_infos(village_id, session)

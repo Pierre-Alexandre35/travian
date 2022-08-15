@@ -21,7 +21,6 @@ async def register(
             detail="Account already exists",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
     access_token = create_access_token(
         data={"user_id": new_user.user_id, "mail": new_user.email},
         expires_delta=timedelta(minutes=30),
