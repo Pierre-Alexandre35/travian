@@ -1,14 +1,15 @@
 # travian_browser_game
 
-Project was on hold for around 10 months due to personnal issues. I am now going to invest between 10 to 20 hours per week on this project. 
-
-
-Complete Travian clone build using FastAPI, Vue3
-
-[Complete documentation here](https://pierre-alexandre35.github.io/travian_browser_game/)
-
-[![documentation](docs/img/travian.jpeg)](https://pierre-alexandre35.github.io/travian_browser_game/)
-
-
 poetry install
 poetry run python asgi.py
+
+## Jira
+
+We are using the free version of Jira to plan and manage our workload. Currently, there is a single Jira board avaibale [here] ([myLib/README.md](https://trello.com/b/v930U8AG/travian
+))with 5 different labels:
+- backend
+- frontend
+- database (including data modeling)
+- docs
+- infra (hosted on Google Cloud Platform)
+
