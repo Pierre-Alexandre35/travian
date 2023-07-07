@@ -2,7 +2,7 @@
 
 I had this project in my mind since a long time. I've always been a huge fan of the popular browser game called Travian. Travian is a browser based MMOG where you compete with thousands of other players by buuilding up your village, building, ressources, fields, troops in order to have the largest global population accross the server. 
 
-The goal of this project is to have a complete Travian-like game, available online. 
+The goal of the project is to have exactly the same logic as the original, but with some UI enhancements, as well as being cross-platform.
 
 
 ## Technologies  
