@@ -4,6 +4,9 @@ I had this project in my mind since a long time. I've always been a huge fan of 
 
 The goal of the project is to have exactly the same logic as the original, but with some UI enhancements, as well as being cross-platform.
 
+The project was on-hold for almost a year due to personnal issues, and I am now going to invest more time in this project and using a different approach. When I started Travian-clone, I was working on every aspects at the same time (front-end using Vue3, working on the data-modeling, user authentification, ...). This is currently a single-person company and it was very difficult to work on every aspect at the same time with a limited amount of time. So I decided to continue this project with a different approch:
+- Use Trello
+- Front-end at the end. Focus 100% on the back-end and data-modeling. 
 
 ## Technologies  
 ### Project Management
