@@ -18,11 +18,11 @@ The goal of this project is to have a complete Travian-like game, available onli
 
 ### Front
 - Vue3
-- <ins>Axios</ins> Fetch 
+- ~~Axios~~ Fetch 
 
 ### Infra
 Everything will be hosted on the cloud, on Google Cloud Platform:
-- <ins>Kubernetes</ins> Cloud Run  
+- ~~Kubernetes~~ Cloud Run  
 - Terraform 
 
 
