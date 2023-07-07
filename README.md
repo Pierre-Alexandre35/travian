@@ -37,7 +37,7 @@ poetry run python asgi.py
 
 ## Project Management 
 
-Trello board is available [here]([https://www.genome.gov/](https://trello.com/b/v930U8AG/travian))
+Trello board is available [here](https://trello.com/b/v930U8AG/travian)
 . with 5 different labels:
 - backend
 - frontend
