@@ -37,8 +37,8 @@ poetry run python asgi.py
 
 ## Project Management 
 
-We are using the free version of Jira to plan and manage our workload. Currently, there is a single Jira board avaibale [here] ([myLib/README.md](https://trello.com/b/v930U8AG/travian
-))with 5 different labels:
+Trello board is available [here]([https://www.genome.gov/](https://trello.com/b/v930U8AG/travian))
+. with 5 different labels:
 - backend
 - frontend
 - database (including data modeling)
