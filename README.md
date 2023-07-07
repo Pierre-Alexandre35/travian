@@ -6,6 +6,8 @@ The goal of the project is to have exactly the same logic as the original, but w
 
 
 ## Technologies  
+### Project Management
+- Trello
 
 ### Database tools
 - Datagrip (used for data modeling, created schemas)
