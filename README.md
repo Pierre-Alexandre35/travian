@@ -19,7 +19,8 @@ The project was on-hold for almost a year due to personnal issues, and I am now 
 ### Backend
 - FastAPI
 - Custom-made ORM (just because I wanted to try to do it without an ORM)
-- Oauth2 (users authentification) 
+- Oauth2 (users authentification)
+- Poetry (dependencies management) 
 
 ### Front
 - Vue3
