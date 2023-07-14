@@ -3,12 +3,9 @@ CREATE SCHEMA master;
 CREATE SCHEMA transactions;
 
 CREATE TABLE
-  master.crop_types (
+  master.ressources_types (
     id serial NOT NULL,
-    wood INT4 NOT NULL,
-    clay INT4 NOT NULL,
-    iron INT4 NOT NULL,
-    corn INT4 NOT NULL,
+    ressource VARCHAR(15),
     PRIMARY KEY (id)
 );
 
@@ -31,9 +28,7 @@ CREATE TABLE
     id serial NOT NULL,
     x_pos integer NOT NULL,
     y_pos integer NOT NULL,
-    crop_type integer NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (crop_type) REFERENCES master.crop_types(id),
     UNIQUE (x_pos, y_pos)
 );
 
@@ -45,6 +40,39 @@ CREATE TABLE
     description VARCHAR(400),
     PRIMARY KEY (id),
     FOREIGN KEY (tribe_id) REFERENCES master.tribes(id)
+);
+
+CREATE TABLE
+  master.buildings_positions (
+    id serial NOT NULL,
+    position_id serial NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE
+  master.warehouse_storage (
+    id serial NOT NULL,
+    level integer NOT NULL,
+    max_storage INT NOT NULL
+);
+
+CREATE TABLE
+  master.crop_production (
+    id serial NOT NULL,
+    crope_type_id integer NOT NULL,
+    level INT NOT NULL,
+    production INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (crope_type_id) REFERENCES master.ressources_types(id)
+);
+
+CREATE TABLE
+  master.crop_positions (
+    id serial NOT NULL,
+    crop_type INT NOT NULL, 
+    details VARCHAR(50),
+    PRIMARY KEY (id),
+    FOREIGN KEY (crop_type) REFERENCES master.ressources_types(id)
 );
 
 CREATE TABLE
@@ -64,23 +92,12 @@ CREATE TABLE
 );
 
 CREATE TABLE
-  master.buildings_positions (
-    id serial NOT NULL,
-    position_id serial NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE
   transactions.villages (
     id serial NOT NULL,
     name VARCHAR(256) NOT NULL,
     population INT4 NOT NULL,
     owner_id INT NOT NULL,
     position_id INT NOT NULL,
-    wood INT4 NOT NULL,
-    clay INT4 NOT NULL,
-    iron INT4 NOT NULL,
-    corn INT4 NOT NULL,  
     PRIMARY KEY (id),
     UNIQUE (position_id),
     FOREIGN KEY (owner_id) REFERENCES transactions.users(id),
@@ -128,56 +145,36 @@ CREATE TABLE
   );
 
 CREATE TABLE
-  master.crops_positions (
+  transactions.crops (
     id serial NOT NULL,
-    position_id serial NOT NULL,
-    PRIMARY KEY (id)
+    village_id integer NOT NULL,
+    position_id INT NOT NULL,
+    level INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (position_id) REFERENCES  master.crop_positions(id),
+    UNIQUE (village_id, position_id)
 );
 
 CREATE TABLE
-  master.crop_production (
+  master.crop_upgrades_cost (
     id serial NOT NULL,
     crope_type_id integer NOT NULL,
     level INT NOT NULL,
-    production INT NOT NULL,
+    ressource_type INT NOT NULL,
+    cost INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (crope_type_id) REFERENCES master.crop_types(id)
-);
-
-
-CREATE TABLE
-  master.warehouse_storage (
-    id serial NOT NULL,
-    level integer NOT NULL,
-    max_storage INT NOT NULL
+    FOREIGN KEY (crope_type_id) REFERENCES master.ressources_types(id),
+    FOREIGN KEY (ressource_type) REFERENCES master.ressources_types(id)
 );
 
 CREATE TABLE
-  transactions.crops (
+  transactions.ressources (
     id serial NOT NULL,
-    villages_id INT NOT NULL,
-    position_id INT NOT NULL, /* must be a foreign key on the long run */
-    crop_types INT NOT NULL,
-    level INT NOT NULL,
-    FOREIGN KEY (villages_id) REFERENCES transactions.villages(id),
-    FOREIGN KEY (crop_types) REFERENCES master.crop_types(id)
-);
-
-CREATE TABLE
-  master.crops_distribution_types (
-    id serial NOT NULL,
-    wood INT4 NOT NULL,
-    clay INT4 NOT NULL,
-    iron INT4 NOT NULL,
-    corn INT4 NOT NULL,
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE
-  master.crops_distribution (
-    id serial NOT NULL,
-    distribution_type_id INT4 NOT NULL,
-    position INT4 NOT NULL,
-    crop_type INT4 NOT NULL,
-    PRIMARY KEY (id)
+    village_id integer NOT NULL,
+    ressource_id INT NOT NULL,
+    amount INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (village_id) REFERENCES transactions.villages(id),
+    FOREIGN KEY (ressource_id) REFERENCES master.ressources_types(id),
+    UNIQUE (village_id, ressource_id)
 );

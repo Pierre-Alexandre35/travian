@@ -7,30 +7,29 @@ INSERT INTO
     ('gauls')
 ;
 
-INSERT INTO 
-  master.crop_types 
-    (wood, clay, iron, corn)
+INSERT INTO
+  master.ressources_types
+    (ressource)
   VALUES 
-    (4,4,4,4), 
-    (3,5,4,4),
-    (4,4,5,3),
-    (2,2,2,10),
-    (3,3,5,5)
+    ('wood'),
+    ('clay'),
+    ('iron'),
+    ('corn')
 ;
 
 INSERT INTO 
   master.map 
-    (x_pos, y_pos, crop_type)
+    (x_pos, y_pos)
   VALUES 
-    (0,0,1), 
-    (0,1,2),
-    (1,0,1),
-    (1,1,2),
-    (2,0,3), 
-    (2,1,2),
-    (3,0,1),
-    (3,1,4),
-    (3,2,4)
+    (0,0), 
+    (0,1),
+    (1,0),
+    (1,1),
+    (2,0), 
+    (2,1),
+    (3,0),
+    (3,1),
+    (3,2)
 ;
 
 INSERT INTO 
@@ -60,37 +59,6 @@ INSERT INTO
 ;
 
 INSERT INTO 
-  master.buildings_upgrades 
-    (building_id, level, wood, clay, iron, corn, requirements_id)
-  VALUES 
-    ('done'), 
-    ('in-progress')
-;
-
-/* example: requirements market requires 2 things to be build (level 1): main building level 3 and warehouse level 1*/
-INSERT INTO 
-  master.buildings_upgrades 
-    (buildings_upgrade_id, required_building_id, required_building_level)
-  VALUES 
-    (1, 1, 3), /* condition 1: build type 1 must be level 3 */
-    (1, 7, 1) /* condition 2: build type 7 must be level 1 */
-;
-
-INSERT INTO 
-  master.buildings_upgrades 
-    (building_id, level, wood, clay, iron, corn, requirements_id)
-  VALUES 
-    (1, 1, 100, 150, 80, 200, NULL),
-    (2, 1, 100, 150, 80, 200, NULL),
-    (3, 1, 100, 150, 80, 200, NULL),
-    (10, 1, 600, 600, 550, 400, 1),
-    (11, 1, 600, 600, 550, 400, 1),
-    (12, 1, 600, 600, 550, 400, 1)
-;
-
-
-
-INSERT INTO 
   master.crop_production 
     (crope_type_id, level, production)
   VALUES 
@@ -112,7 +80,6 @@ INSERT INTO
     (4, 3, 50)
 ;
 
-
 INSERT INTO 
   master.warehouse_storage 
     (level, max_storage)
@@ -123,35 +90,127 @@ INSERT INTO
     (4, 4000),
     (5, 6000),
     (6, 9000)
+;  
+
+INSERT INTO 
+  master.buildings_requirements 
+    (buildings_upgrade_id, required_building_id, required_building_level)
+  VALUES 
+    (1, 4, 10),
+    (1, 2, 1)
 ;
 
-
+INSERT INTO 
+  master.buildings_upgrades 
+    (building_id, level, wood, clay, iron, corn, requirements_id)
+  VALUES 
+    (1, 1, 100, 150, 80, 200, NULL),
+    (2, 1, 100, 150, 80, 200, NULL),
+    (3, 1, 100, 150, 80, 200, NULL),
+    (10, 1, 600, 600, 550, 400, 1),
+    (11, 1, 600, 600, 550, 400, 1),
+    (12, 1, 600, 600, 550, 400, 1)
+;
 
 INSERT INTO
-  master.crops_distribution_types     (wood, clay, iron, corn)
+  master.crop_positions     
+    (crop_type, details)
   VALUES 
-    (1, 1, 1, 15),
-    (3, 3, 3, 9),
-    (4, 4, 4, 6),
-    (5, 4, 5, 4)
+    (1,'north'),
+    (1,'north'),
+    (2,'north'),
+    (2,'north'),
+    (3,'south'),
+    (3,'south'),
+    (4,'south'),
+    (4,'south'),
+    (1,'east'),
+    (1,'east'),
+    (2,'east'),
+    (2,'east'),
+    (3,'west'),
+    (3,'west'),
+    (4,'west'),
+    (4,'west'),
+    (4,'west'),
+    (4,'west')
 ;
-  
-
 
 INSERT INTO
-  master.crops_distribution_types     (distribution_type_id, position, crop_type, corn)
+  transactions.crops  
+    (village_id, position_id, level)
   VALUES 
-    (3, 1, 1, 15),
-    (3, 3, 3, 9),
-    (3, 4, 4, 6),
-    (3, 4, 5, 4),
-    (3, 1, 1, 15),
-    (3, 3, 3, 9),
-    (3, 4, 4, 6),
-    (3, 4, 5, 4),
-    (3, 1, 1, 15),
-    (3, 3, 3, 9),
-    (3, 4, 4, 6),
-    (3, 4, 5, 4)
+    (1, 1, 0),
+    (1, 2, 0),
+    (1, 3, 0),
+    (1, 4, 0),
+    (1, 5, 0),
+    (1, 6, 0),
+    (1, 7, 0),
+    (1, 8, 0),
+    (1, 9, 0),
+    (1, 10, 0),
+    (1, 11, 0),
+    (1, 12, 0),
+    (1, 13, 0),
+    (1, 14, 0),
+    (1, 15, 0),
+    (1, 16, 0),
+    (1, 17, 0),
+    (1, 18, 0)
 ;
-  
+
+INSERT INTO
+  master.crop_upgrades_cost     
+    (crope_type_id, level, ressource_type, cost)
+  VALUES 
+    (1, 1, 1, 150),
+    (1, 1, 2, 130),
+    (1, 1, 3, 110),
+    (1, 1, 4, 100),
+    (1, 2, 1, 250),
+    (1, 2, 2, 230),
+    (1, 2, 3, 210),
+    (1, 2, 4, 200),
+    (1, 3, 1, 350),
+    (1, 3, 2, 330),
+    (1, 3, 3, 310),
+    (1, 3, 4, 300),
+    (2, 1, 1, 110),
+    (2, 1, 2, 150),
+    (2, 1, 3, 90),
+    (2, 1, 4, 80),
+    (2, 2, 1, 210),
+    (2, 2, 2, 250),
+    (2, 2, 3, 190),
+    (2, 2, 4, 180),
+    (2, 3, 1, 310),
+    (2, 3, 2, 350),
+    (2, 3, 3, 290),
+    (2, 3, 4, 280),
+    (3, 1, 1, 140),
+    (3, 1, 2, 110),
+    (3, 1, 3, 100),
+    (3, 1, 4, 80),
+    (3, 2, 1, 240),
+    (3, 2, 2, 210),
+    (3, 2, 3, 200),
+    (3, 2, 4, 180),
+    (3, 3, 1, 340),
+    (3, 3, 2, 310),
+    (3, 3, 3, 300),
+    (3, 3, 4, 280),
+    (4, 1, 1, 50),
+    (4, 1, 2, 50),
+    (4, 1, 3, 50),
+    (4, 1, 4, 50),
+    (4, 2, 1, 100),
+    (4, 2, 2, 100),
+    (4, 2, 3, 100),
+    (4, 2, 4, 100),
+    (4, 3, 1, 200),
+    (4, 3, 2, 200),
+    (4, 3, 3, 200),
+    (4, 3, 4, 200)
+;
+
