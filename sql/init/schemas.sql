@@ -59,20 +59,20 @@ CREATE TABLE
 CREATE TABLE
   master.crop_production (
     id serial NOT NULL,
-    crope_type_id integer NOT NULL,
+    ressource_type_id integer NOT NULL,
     level INT NOT NULL,
     production INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (crope_type_id) REFERENCES master.ressources_types(id)
+    FOREIGN KEY (ressource_type_id) REFERENCES master.ressources_types(id)
 );
 
 CREATE TABLE
   master.crop_positions (
     id serial NOT NULL,
-    crop_type INT NOT NULL, 
+    ressource_type INT NOT NULL, 
     details VARCHAR(50),
     PRIMARY KEY (id),
-    FOREIGN KEY (crop_type) REFERENCES master.ressources_types(id)
+    FOREIGN KEY (ressource_type) REFERENCES master.ressources_types(id)
 );
 
 CREATE TABLE
@@ -156,15 +156,26 @@ CREATE TABLE
 );
 
 CREATE TABLE
+  master.crop_upgrades (
+    id serial NOT NULL,
+    ressource_type_id integer NOT NULL,
+    level INT NOT NULL,
+    population_increase integer NOT NULL,
+    duration_in_seconds integer NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (ressource_type_id) REFERENCES master.ressources_types(id),
+    FOREIGN KEY (ressource_type_id) REFERENCES master.ressources_types(id)
+);
+
+CREATE TABLE
   master.crop_upgrades_cost (
     id serial NOT NULL,
-    crope_type_id integer NOT NULL,
-    level INT NOT NULL,
-    ressource_type INT NOT NULL,
+    crop_upgrades_id integer NOT NULL,
+    ressource_type_id INT NOT NULL,
     cost INT NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (crope_type_id) REFERENCES master.ressources_types(id),
-    FOREIGN KEY (ressource_type) REFERENCES master.ressources_types(id)
+    FOREIGN KEY (crop_upgrades_id) REFERENCES master.crop_upgrades(id),
+    FOREIGN KEY (ressource_type_id) REFERENCES master.ressources_types(id)
 );
 
 CREATE TABLE
@@ -177,4 +188,23 @@ CREATE TABLE
     FOREIGN KEY (village_id) REFERENCES transactions.villages(id),
     FOREIGN KEY (ressource_id) REFERENCES master.ressources_types(id),
     UNIQUE (village_id, ressource_id)
+);
+
+CREATE TABLE
+  master.construction_status (
+    id serial NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE
+  transactions.constructions (
+    id serial NOT NULL,
+    village_id INT NOT NULL,
+    position_id INT NOT NULL,
+    status_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (village_id) REFERENCES transactions.villages(id),
+    FOREIGN KEY (position_id) REFERENCES  master.crop_positions(id),
+    FOREIGN KEY (status_id) REFERENCES master.construction_status(id)
 );
