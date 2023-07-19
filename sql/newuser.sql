@@ -6,7 +6,7 @@ FROM
   master.tribes
 ;
 
-
+/* user registration informations  */
 INSERT INTO 
   transactions.users 
     (uuid, email, active, superuser, created_on, password, password_salt, tribe_id)
@@ -14,7 +14,7 @@ INSERT INTO
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11','EMAIL HERE',TRUE, FALSE, '2023-06-30', '1234', 'sdJ^728ddHdy736', 1)
 ;
 
-/* please select your location - display available spots*/
+/* please select your first village location - display available locations */
 SELECT 
   map.id, 
   map.x_pos, 
@@ -26,7 +26,6 @@ FROM
     WHERE villages.id IS NULL
 ;
 
-
 /* user (user_id 1) is selecting location 4*/
 INSERT INTO 
   transactions.villages 
@@ -35,8 +34,7 @@ INSERT INTO
     ('rome', 50, 1, 4);
 ;
 
-
-
+/* village 1 crops production init */
 INSERT INTO
   transactions.crops  
     (village_id, position_id, level)
@@ -61,7 +59,7 @@ INSERT INTO
     (1, 18, 0)
 ;
 
-/* user (user_id 1) which has village id 1 set up village ressources 4*/
+/* village 1 ressources init */
 INSERT INTO
   transactions.ressources 
     (village_id, ressource_id, amount)
@@ -72,14 +70,63 @@ INSERT INTO
     (1, 4, 1000)
 ;
 
+/* transaction : user 1 on his first village (village_id = 1) wants to improve one one his wood crop from level 0 to 1 */
+/* step 1: find all locations IDs where there is wood (ressource type 1) */
+SELECT 
+  crops.position_id,
+  crops.level,
+  positions.ressource_type,
+  positions.details
+FROM
+  transactions.crops as crops
+LEFT JOIN master.crop_positions as positions ON crops.position_id = positions.id
+WHERE village_id = 1
+AND positions.ressource_type = 1
 
-/* one user (id 1) creating a new village at position 1 */
-INSERT INTO 
-  transactions.villages 
-    (name, population, owner_id, position_id, population)
-  VALUES 
-    ('paris', 50, 1, 2, 500);
 
+/* step 2: check the time, cost of upgrade the spot 9 (ressource type 1) from level 0 to 1 */
+SELECT 
+  crops.position_id,
+  crops.level,
+  positions.ressource_type,
+  positions.details,
+  upgrades.level,
+  upgrades.population_increase,
+  upgrades.duration_in_seconds,
+  upgrades_cost.ressource_type_id,
+  upgrades_cost.cost
+FROM
+  transactions.crops as crops
+LEFT JOIN master.crop_positions as positions ON crops.position_id = positions.id
+LEFT JOIN master.crop_upgrades as upgrades ON positions.ressource_type = upgrades.ressource_type_id
+LEFT JOIN master.crop_upgrades_cost as upgrades_cost ON upgrades.id = upgrades_cost.crop_upgrades_id
+WHERE village_id = 1
+AND crops.position_id = 9
+AND upgrades.level = crops.level + 1
+
+
+
+/* step 3: check if we have enough ressource for the upgrade */
+SELECT 
+  crops.position_id,
+  crops.level as current_level,
+  upgrades.level as target_level,
+  positions.ressource_type,
+  upgrades.population_increase,
+  upgrades.duration_in_seconds,
+  upgrades_cost.ressource_type_id cost_ressource_type,
+  upgrades_cost.cost cost_amount,
+  user_ressouces.amount as user_amount
+FROM
+  transactions.crops as crops
+LEFT JOIN master.crop_positions as positions ON crops.position_id = positions.id
+LEFT JOIN master.crop_upgrades as upgrades ON positions.ressource_type = upgrades.ressource_type_id
+LEFT JOIN master.crop_upgrades_cost as upgrades_cost ON upgrades.id = upgrades_cost.crop_upgrades_id
+LEFT JOIN transactions.ressources as user_ressouces ON user_ressouces.village_id = crops.village_id AND user_ressouces.ressource_id =  upgrades_cost.ressource_type_id
+WHERE crops.village_id = 1
+AND crops.position_id = 9
+AND upgrades.level = crops.level + 1
+;
 
 /* get the list of all villages for user 1 */
 SELECT
@@ -133,29 +180,4 @@ FROM transactions.crops as crops
     ON crops.level = production.level AND pos.ressource_type = production.ressource_type_id
  WHERE crops.village_id = 1
  GROUP BY ressource_type
-
-
-
-
-/* upgrade a crop */
-
-    
-/*  I am user 1 for village 1, I want to upgrade my crop at position 6 */
-  
-  
-  SELECT 
-    *
-  FROM transactions.crops AS crops 
-  LEFT JOIN master.crop_positions AS pos 
-    ON crops.position_id = pos.id
- LEFT JOIN master.crop_upgrades AS upgrades 
-   ON pos.ressource_type = upgrades.ressource_type_id 
- LEFT JOIN master.crop_upgrades_cost AS upgrades_cost 
-   ON upgrades.id = upgrades_cost.crop_upgrades_id 
- WHERE crops.village_id = 1 
- AND crops.position_id = 6
- AND upgrades.level = crops.level +1
-
-
-
-
+;
