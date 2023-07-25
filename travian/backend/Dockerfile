@@ -2,9 +2,11 @@ FROM python:3.9
 
 RUN mkdir /app
 WORKDIR /app
+COPY pyproject.toml /app 
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-dev
 
 COPY . /app
 
