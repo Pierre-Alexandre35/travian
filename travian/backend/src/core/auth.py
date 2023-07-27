@@ -1,6 +1,6 @@
 import jwt
 from fastapi import Depends
-from src.db.crud.user import create_user, get_user_by_email, user_exits
+from src.db.services.user import create_user, get_user_by_email, user_exits
 from src.db.schemas.user import UserCreate, UserJWTToken
 from src.core.security import password_verify, oauth2_scheme
 from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO

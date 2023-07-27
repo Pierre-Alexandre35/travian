@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from src.db.utils import get_db
 from src.core.auth import get_current_user
-from src.db.crud.village import get_villages, create_village, get_village_infos
+from src.db.services.village import get_villages, create_village, get_village_infos
 from src.db.utils import get_db
 from src.db.schemas.villages import NewVillage
 

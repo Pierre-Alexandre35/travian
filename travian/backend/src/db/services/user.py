@@ -14,7 +14,7 @@ def create_user(
     is_active = True
     is_superuser = False
     sql = """
-        INSERT INTO users (uuid, email, active, superuser, created_on, password, password_salt) 
+        INSERT INTO transactions.users (uuid, email, active, superuser, created_on, password, password_salt) 
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
     params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt)
@@ -24,8 +24,8 @@ def create_user(
 
 def user_exits(session: Database, email: str) -> bool:
     sql = """
-        SELECT COUNT(user_id) 
-        FROM users 
+        SELECT COUNT(id) 
+        FROM transactions.users 
         WHERE email = (%s)
         """
     params = [email]
@@ -35,14 +35,14 @@ def user_exits(session: Database, email: str) -> bool:
 
 def get_user_by_email(session: Database, email: str) -> user_schemas.UserAuth:
     sql = """
-        SELECT user_id, uuid, email, password, password_salt
-        FROM users 
+        SELECT id, uuid, email, password, password_salt
+        FROM transactions.users 
         WHERE email = (%s)
         """
     params = [email]
     records = session.select_rows_dict_cursor(sql, params)
     return user_schemas.UserAuth(
-        user_id=records[0][0],
+        id=records[0][0],
         uuid=str(records[0][1]),
         email=records[0][2],
         password=bytes(records[0][3]),

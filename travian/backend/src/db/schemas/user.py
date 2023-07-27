@@ -12,7 +12,7 @@ class UserCreate(BaseModel):
 class UserAuth(BaseModel):
     """Input required to authenticate a returning user"""
 
-    user_id: int
+    id: int
     uuid: str
     email: str
     password: bytes
