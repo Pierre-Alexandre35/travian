@@ -2,7 +2,7 @@ import os
 
 # FastAPI
 AUTH_TOKEN_ALGO = "HS256"
-SECRET_KEY = os.getenv("FASTAPI_SECRET")
+SECRET_KEY = "wwew12"
 
 # Database
 DATABASE_ENGINE = "POSTGRES"

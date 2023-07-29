@@ -12,14 +12,13 @@ village_router = village = APIRouter()
 def insert_village(
     village: NewVillage, session=Depends(get_db), current_user=Depends(get_current_user)
 ):
-    create_village(session, current_user.user_id, village)
+    create_village(session, current_user.id, village)
     return {"dd": village}
 
 
 @village.get("/")
 def get_all(session=Depends(get_db), current_user=Depends(get_current_user)):
-    user_villages = get_villages(session, current_user.user_id).villages
-    return user_villages
+    return {"dd": str(current_user)}
 
 
 @village.get("/{village_id}")

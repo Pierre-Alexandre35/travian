@@ -1,7 +1,7 @@
 import jwt
 from fastapi import Depends
 from src.db.services.user import create_user, get_user_by_email, user_exits
-from src.db.schemas.user import UserCreate, UserJWTToken
+from src.db.schemas.user import UserCreate
 from src.core.security import password_verify, oauth2_scheme
 from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
 from src.db.conn import Database
@@ -11,10 +11,10 @@ from src.db.utils import get_db
 def sign_up_new_user(session: Database, email: str, password: str) -> id:
     user = user_exits(session, email)
     if user:
-        return False  # User already exists∑
+        return False  # User already exists
     return create_user(session, UserCreate(email=email, password=password))
 
-
+∑
 def authenticate_user(session: Database, email: str, password: str) -> UserCreate:
     user = user_exits(session, email)
     if not user:
@@ -36,7 +36,7 @@ async def get_current_user(
         print(type(id))
         if email is None:
             print("credentials_exception")
-        token_data = UserJWTToken(id=id, email=email)
+        token_data = user_data(id=id, email=email)
     except jwt.PyJWTError:
         print("credentials_exception")
     user = get_user_by_email(session, token_data.email)

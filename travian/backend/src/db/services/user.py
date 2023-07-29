@@ -19,7 +19,7 @@ def create_user(
         """
     params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt)
     session.update_rows(sql, params)
-    return user_schemas.UserJWTToken(user_id=uuid, email=user.email)
+    return user_schemas.UserJWTToken(id=uuid, email=user.email)
 
 
 def user_exits(session: Database, email: str) -> bool:

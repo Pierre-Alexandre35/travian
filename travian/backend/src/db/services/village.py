@@ -2,13 +2,13 @@ from src.db.conn import Database
 from src.db.schemas import villages as village_schemas
 
 
-def get_villages(session: Database, user_id: str) -> village_schemas.UserVillages:
+def get_villages(session: Database, id: str) -> village_schemas.UserVillages:
     sql = """
         SELECT *
         FROM villages 
         WHERE owner_id = (%s)
         """
-    params = [user_id]
+    params = [id]
     records = session.select_rows_dict_cursor(sql, params)
     user_villages = []
     for record in records:
@@ -24,7 +24,7 @@ def get_villages(session: Database, user_id: str) -> village_schemas.UserVillage
 
 
 def create_village(
-    session: Database, user_id: str, new_village: village_schemas.Village
+    session: Database, id: str, new_village: village_schemas.Village
 ):
     sql = """
         INSERT INTO villages (name, population, owner_id, position_id) 
@@ -33,7 +33,7 @@ def create_village(
     params = (
         new_village.name,
         new_village.population,
-        user_id,
+        id,
         new_village.position_id,
     )
     session.update_rows(sql, params)
