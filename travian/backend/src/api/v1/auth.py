@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from src.core.auth import sign_up_new_user, authenticate_user
 from src.core.security import create_access_token
@@ -29,7 +29,7 @@ async def register(
 
 
 @auth.post("/token")
-async def login(
+async def login( response: Response,
     session=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
     user = authenticate_user(
@@ -47,4 +47,5 @@ async def login(
             minutes=30,
         ),
     )
+    response.set_cookie(key="access_token",value=f"Bearer {access_token}", httponly=True)  #set HttpOnly cookie in response
     return {"access_token": access_token, "token_type": "bearer"}

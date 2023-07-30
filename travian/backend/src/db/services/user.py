@@ -14,10 +14,10 @@ def create_user(
     is_active = True
     is_superuser = False
     sql = """
-        INSERT INTO transactions.users (uuid, email, active, superuser, created_on, password, password_salt) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO transactions.users (uuid, email, active, superuser, created_on, password, password_salt, tribe_id) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-    params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt)
+    params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt, '1')
     session.update_rows(sql, params)
     return user_schemas.UserJWTToken(id=uuid, email=user.email)
 
