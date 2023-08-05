@@ -10,13 +10,16 @@ def create_app() -> FastAPI:
     root_app = FastAPI()
 
     root_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"], # Allows all methods
-    allow_headers=["*"], # Allows all headers
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://localhost:5500",
+        ],  # Allows all origins
+        allow_credentials=True,
+        allow_methods=["*"],  # Allows all methods
+        allow_headers=["*"],  # Allows all headers
     )
-    
+
     root_app.include_router(
         auth_router,
         prefix="/api/v1",

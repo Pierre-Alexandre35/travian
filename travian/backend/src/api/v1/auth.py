@@ -29,8 +29,10 @@ async def register(
 
 
 @auth.post("/token")
-async def login( response: Response,
-    session=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+async def login(
+    response: Response,
+    session=Depends(get_db),
+    form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     user = authenticate_user(
         session, email=form_data.username, password=form_data.password
@@ -47,5 +49,7 @@ async def login( response: Response,
             minutes=30,
         ),
     )
-    response.set_cookie(key="access_token",value=f"Bearer {access_token}", httponly=True)  #set HttpOnly cookie in response
+    response.set_cookie(
+        key="access_token", value=f"Bearer {access_token}", httponly=True
+    )  # set HttpOnly cookie in response
     return {"access_token": access_token, "token_type": "bearer"}

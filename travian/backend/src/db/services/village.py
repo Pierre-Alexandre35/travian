@@ -2,13 +2,23 @@ from src.db.conn import Database
 from src.db.schemas import villages as village_schemas
 
 
-def get_villages(session: Database, id: str) -> village_schemas.UserVillages:
+def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVillages:
+    print(user_id)
     sql = """
-        SELECT *
-        FROM villages 
-        WHERE owner_id = (%s)
+        SELECT 
+          villages.id,
+          villages.name,
+          villages.owner_id,
+          villages.position_id
+        FROM
+          transactions.villages as villages
+        LEFT JOIN 
+          master.map as map 
+          ON villages.position_id = map.id
+        WHERE
+          villages.owner_id = (%s)
         """
-    params = [id]
+    params = [user_id]
     records = session.select_rows_dict_cursor(sql, params)
     user_villages = []
     for record in records:
@@ -23,9 +33,7 @@ def get_villages(session: Database, id: str) -> village_schemas.UserVillages:
     return village_schemas.UserVillages(villages=user_villages)
 
 
-def create_village(
-    session: Database, id: str, new_village: village_schemas.Village
-):
+def create_village(session: Database, id: str, new_village: village_schemas.Village):
     sql = """
         INSERT INTO villages (name, population, owner_id, position_id) 
         VALUES (%s, %s, %s, %s)

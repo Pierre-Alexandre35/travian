@@ -32,8 +32,6 @@ async def get_current_user(
         payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTH_TOKEN_ALGO])
         email: str = payload.get("email")
         id: int = payload.get("id")
-        print('abc')
-        print(type(id))
         if email is None:
             print("credentials_exception")
         token_data = UserJWTToken(id=id, email=email)
