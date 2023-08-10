@@ -24,6 +24,10 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
+      - name: Fix Auth
+        run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
+
+
       - name: Installing dependencies
         run: npm install
 
