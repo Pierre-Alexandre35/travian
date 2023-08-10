@@ -20,7 +20,7 @@ jobs:
 
       - name: Google Auth
         id: auth
-        uses: 'google-github-actions/auth@v1'
+        uses: 'google-github-actions/auth@1.0.1'
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
