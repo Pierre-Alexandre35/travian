@@ -6,7 +6,7 @@ on:
 
 jobs:
   # To build the project
-  build-tambola:
+  build-front:
     runs-on: ubuntu-latest
     defaults:
       run:
