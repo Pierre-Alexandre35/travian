@@ -27,12 +27,11 @@ jobs:
       - name: Fix Auth
         run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
 
-
       - name: Deploy to Cloud Run 
-        run:  gcloud run deploy backend --image=gcr.io/ecstatic-motif-393807/backend:1.0.0 --port=8000 --platform managed --allow-unauthenticated --region=europe-west1  |
-  --add-cloudsql-instances ecstatic-motif-393807:us-central1:travian-db |
-  --set-env-vars INSTANCE_UNIX_SOCKET="/cloudsql/ecstatic-motif-393807:us-central1:travian-db" |
-  --set-env-vars INSTANCE_CONNECTION_NAME="ecstatic-motif-393807:us-central1:travian-db" |
-  --set-env-vars DB_NAME="quickstart_db" |
-  --set-env-vars DB_USER="pierre" |
-  --set-env-vars DB_PASS="123456"
+        run:  gcloud run deploy backend --image=gcr.io/ecstatic-motif-393807/backend:1.0.0 --port=8000 --platform managed --allow-unauthenticated --region=europe-west1  \
+              --add-cloudsql-instances ecstatic-motif-393807:us-central1:travian-db \
+              --set-env-vars INSTANCE_UNIX_SOCKET="/cloudsql/ecstatic-motif-393807:us-central1:travian-db" \
+              --set-env-vars INSTANCE_CONNECTION_NAME="ecstatic-motif-393807:us-central1:travian-db" \
+              --set-env-vars DB_NAME="quickstart_db" \
+              --set-env-vars DB_USER="pierre" \
+              --set-env-vars DB_PASS="123456"
