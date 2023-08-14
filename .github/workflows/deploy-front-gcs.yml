@@ -18,8 +18,8 @@ jobs:
       - name: Checking out code
         uses: actions/checkout@v3
 
-      - id: 'Authenticate to Google Cloud'
-      name: 'auth'
+      - name: 'Authenticate to Google Cloud'
+      id: 'auth'
       uses: 'google-github-actions/auth@v1'
       with:
         workload_identity_provider: 'projects/157663317275/locations/global/workloadIdentityPools/github/providers/github-provider'
