@@ -4,10 +4,11 @@ locals {
     "cloudbuild.googleapis.com",
     "run.googleapis.com",
     "iam.googleapis.com",
+    "sqladmin.googleapis.com",
   ]
 }
 
-resource "google_project_service" "enabled_service" {
+resource "google_project_service" "enabled_services" {
   for_each = toset(local.services)
   project  = var.project_id
   service  = each.key
