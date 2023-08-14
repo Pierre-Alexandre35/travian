@@ -54,6 +54,13 @@ resource "google_storage_bucket_iam_member" "member" {
         image = "gcr.io/google-samples/hello-app:1.0"
       }
     }
+        metadata {
+      annotations = {
+        "autoscaling.knative.dev/maxScale"      = "1"
+        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.instance.connection_name
+        "run.googleapis.com/client-name"        = "terraform"
+      }
+    }
   }
 
   traffic {
@@ -63,4 +70,18 @@ resource "google_storage_bucket_iam_member" "member" {
 
   # Waits for the Cloud Run API to be enabled
   depends_on = [google_project_service.enabled_services]
+}
+
+/*
+database 
+ */
+resource "google_sql_database_instance" "instance" {
+  name             = "cloudrun-sql"
+  region           = var.region
+  database_version = "POSTGRES_15"
+  settings {
+    tier = "db-f1-micro"
+  }
+
+  deletion_protection  = "true"
 }
