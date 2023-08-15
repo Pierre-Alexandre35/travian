@@ -24,7 +24,7 @@ The project was on-hold for almost a year due to personnal issues, and I am now 
 
 ### Front
 - Vue3
-- ~~Axios~~ Fetch 
+- Axios
 
 ### Infra
 Everything will be hosted on the cloud, on Google Cloud Platform:
