@@ -31,7 +31,6 @@ Everything will be hosted on the cloud, on Google Cloud Platform:
 - ~~Kubernetes~~ Cloud Run  
 - Terraform 
 
-
 poetry install
 poetry run python asgi.py
 
