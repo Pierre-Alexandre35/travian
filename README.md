@@ -43,5 +43,3 @@ Trello board is available [here](https://trello.com/b/v930U8AG/travian)
 - database (including data modeling)
 - docs
 - infra (hosted on Google Cloud Platform)
-
-
