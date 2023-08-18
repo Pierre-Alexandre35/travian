@@ -18,12 +18,15 @@ jobs:
       - name: Checking out code
         uses: actions/checkout@v3
 
-      - name: 'Authenticate to Google Cloud'
-        id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v1.1.1'
         with:
-          workload_identity_provider: 'projects/157663317275/locations/global/workloadIdentityPools/github/providers/github-provider'
-          service_account: 'github-actions@second-strand-395917.iam.gserviceaccount.com'
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Fix Auth
+        run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
+
 
       - name: Installing dependencies
         run: npm install
