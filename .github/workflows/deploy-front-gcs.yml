@@ -35,4 +35,4 @@ jobs:
         run: npm run build
 
       - name: Deploy project
-        run: gsutil cp -r dist/* gs://travian.lol
+        run: gsutil cp -r dist/* gs://travian.rest
