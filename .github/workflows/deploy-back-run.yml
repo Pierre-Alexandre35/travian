@@ -28,7 +28,7 @@ jobs:
         run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
 
       - name: Deploy to Cloud Build  
-        run:  gcloud builds submit --tag gcr.io/travian-dev-395914/test:1.0.0 . --suppress-logs
+        run:  gcloud builds submit --tag gcr.io/travian-dev-395914/test:1.0.0 .
 
       - name: Deploy to Cloud Run 
         run:  gcloud run services update app --image=gcr.io/travian-dev-395914/test:1.0.0 --port=8000 --region=us-central1 --platform managed
