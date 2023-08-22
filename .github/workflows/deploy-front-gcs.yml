@@ -1,11 +1,10 @@
-name: Front End Deployment on GCS
+name: Front End Deployment on Google Cloud Storage Bucket
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  # To build the project
   build-front:
     runs-on: ubuntu-latest
     defaults:
@@ -22,17 +21,17 @@ jobs:
         id: auth
         uses: 'google-github-actions/auth@v1.1.1'
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          workload_identity_provider: 'projects/633517882840/locations/global/workloadIdentityPools/githubaction/providers/github'
+          service_account: 'github-identity-pool-service-a@travian-dev-395914.iam.gserviceaccount.com'
 
       - name: Fix Auth
         run: yes | gcloud auth login --cred-file="$GOOGLE_APPLICATION_CREDENTIALS"
 
-
-      - name: Installing dependencies
+      - name: Installing Vue3 dependencies
         run: npm install
 
-      - name: Building project
+      - name: Compiling the Vue3 project into a static folder
         run: npm run build
 
-      - name: Deploy project
+      - name: Moving the static folder into Google Cloud Storage bucket
         run: gsutil cp -r dist/* gs://travian.rest
