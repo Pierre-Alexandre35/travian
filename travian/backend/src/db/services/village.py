@@ -33,10 +33,14 @@ def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVi
     return village_schemas.UserVillages(villages=user_villages)
 
 
-def create_village(session: Database, id: str, new_village: village_schemas.Village):
+def create_village(
+    session: Database, id: str, new_village: village_schemas.Village
+) -> int:
+    # SQL statement with the RETURNING clause to get the newly generated id
     sql = """
-        INSERT INTO villages (name, population, owner_id, position_id) 
+        INSERT INTO transactions.villages (name, population, owner_id, position_id) 
         VALUES (%s, %s, %s, %s)
+        RETURNING id
         """
     params = (
         new_village.name,
@@ -44,8 +48,15 @@ def create_village(session: Database, id: str, new_village: village_schemas.Vill
         id,
         new_village.position_id,
     )
-    session.update_rows(sql, params)
-    return "True"
+    # Execute the SQL and fetch the id of the newly inserted row
+    new_village_id = session.update_rows(sql, params, fetch=True)
+    return village_schemas.Village(
+        village_id=new_village_id,
+        name=new_village.name,
+        owner_id=id,
+        position_id=new_village.position_id,
+        population=new_village.population,
+    )
 
 
 def get_village_infos(
