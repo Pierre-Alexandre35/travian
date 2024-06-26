@@ -1,6 +1,16 @@
-CREATE SCHEMA master;
+-- Create the database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS travian;
 
-CREATE SCHEMA transactions;
+-- Switch to the travian database
+\c travian;
+
+-- Create user and give him priviliges 
+CREATE ROLE super_user WITH SUPERUSER LOGIN PASSWORD 'password';
+
+-- Create schemas
+CREATE SCHEMA IF NOT EXISTS master;
+
+CREATE SCHEMA IF NOT EXISTS transactions;
 
 CREATE TABLE master.ressources_types (
   id serial NOT NULL,

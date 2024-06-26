@@ -1,3 +1,5 @@
+\c travian;
+
 INSERT INTO
   master.tribes (tribe)
 VALUES
