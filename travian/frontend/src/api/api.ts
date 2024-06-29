@@ -7,4 +7,9 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true
 });
 
+export const getAllVillages = async () => {
+  const response = await apiClient.get('/all_villages');
+  return response.data;
+};
+
 export default apiClient;
