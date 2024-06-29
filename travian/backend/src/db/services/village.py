@@ -9,7 +9,8 @@ def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVi
           villages.id,
           villages.name,
           villages.owner_id,
-          villages.position_id
+          villages.position_id,
+          villages.population
         FROM
           transactions.villages as villages
         LEFT JOIN 
@@ -27,7 +28,8 @@ def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVi
                 village_id=record[0],
                 name=record[1],
                 owner_id=record[2],
-                location_id=record[3],
+                position_id=record[3],
+                population=record[4],
             )
         )
     return village_schemas.UserVillages(villages=user_villages)

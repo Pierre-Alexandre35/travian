@@ -7,7 +7,7 @@ from src.db.services.village import (
     get_user_villages,
 )
 from src.db.utils import get_db
-from src.db.schemas.villages import NewVillage, NewVillageRequest
+from src.db.schemas.villages import NewVillage, NewVillageRequest, UserVillages
 
 village_router = village = APIRouter()
 
@@ -32,6 +32,6 @@ def village_infos(
 """
 
 
-@village.get("/abcd")
-def abcd(session=Depends(get_db), current_user=Depends(get_current_user)):
+@village.get("/all_villages", response_model=UserVillages)
+def get_all_villages(session=Depends(get_db), current_user=Depends(get_current_user)):
     return get_user_villages(session, user_id=current_user.id)
