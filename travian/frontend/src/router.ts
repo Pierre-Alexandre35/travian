@@ -3,6 +3,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import LoginPage from '@/views/LoginPage.vue';
 import HomePage from '@/views/HomePage.vue';
+import { useAuthStore } from '@/store/auth';
 
 const routes: Array<RouteRecordRaw> = [
   { path: '/', component: LoginPage },
@@ -14,11 +15,10 @@ const router = createRouter({
   routes,
 });
 
-// Check authentication status before each route navigation
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = true; // Replace with your actual authentication check
+  const authStore = useAuthStore();
 
-  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+  if (to.matched.some(record => record.meta.requiresAuth) && !authStore.isLoggedIn) {
     next('/');
   } else {
     next();
