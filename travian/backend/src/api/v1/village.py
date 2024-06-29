@@ -7,20 +7,19 @@ from src.db.services.village import (
     get_user_villages,
 )
 from src.db.utils import get_db
-from src.db.schemas.villages import NewVillage
+from src.db.schemas.villages import NewVillage, NewVillageRequest
 
 village_router = village = APIRouter()
 
 
 @village.post("/create_village", response_model=NewVillage)
-def new_village(session=Depends(get_db), current_user=Depends(get_current_user)):
-    new_village_data = {
-        "name": 'URSULA',
-        "owner_id": current_user.id,
-        "position_id": 2,
-        "population": 25000
-    }
-    new_village = NewVillage(**new_village_data)
+def new_village(village_data: NewVillageRequest, session=Depends(get_db), current_user=Depends(get_current_user)):
+    new_village = NewVillage(
+        name=village_data.name,
+        owner_id=current_user.id,
+        position_id=village_data.position_id,
+        population=village_data.population
+    )
     village_created = create_village(session, current_user.id, new_village)
     return village_created
 
