@@ -1,9 +1,7 @@
-<!-- views/HomePage.vue -->
+<!-- components/Home.vue -->
 
 <template>
-  <div class="container">
-    <h1>Home Page</h1>
-    <p>Welcome to the Home Page, {{ username }}</p>
+  <div class="village-list">
     <h2>Your Villages</h2>
     <ul>
       <li v-for="village in villages" :key="village.village_id">
@@ -17,24 +15,29 @@
 
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue';
-import { useAuthStore } from '@/store/auth';
 import { useVillagesStore } from '@/store/villages';
+import { useAuthStore } from '@/store/auth';
 
 export default defineComponent({
-  name: 'HomePage',
+  name: 'Home',
   setup() {
     const authStore = useAuthStore();
     const villagesStore = useVillagesStore();
-
-    const username = computed(() => authStore.username);
     const villages = computed(() => villagesStore.villages);
 
     onMounted(async () => {
-      await villagesStore.fetchVillages();
+      if (authStore.isLoggedIn) {
+        try {
+          await villagesStore.fetchVillages();
+        } catch (error) {
+          console.error('Failed to fetch villages:', error);
+        }
+      } else {
+        console.error('User not authenticated');
+      }
     });
 
     return {
-      username,
       villages,
     };
   }
@@ -42,5 +45,18 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Add your styles for HomePage */
+/* Add your styles for Home component */
+.village-list {
+  margin-top: 20px;
+}
+.village-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+.village-list li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 </style>
