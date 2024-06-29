@@ -1,6 +1,9 @@
 # pylint: disable=no-name-in-module, too-few-public-methods
 from pydantic import BaseModel
 
+class TokenData(BaseModel):
+    id: int
+    email: str
 
 class UserCreate(BaseModel):
     """Input required to create a new User"""
