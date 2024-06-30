@@ -45,7 +45,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Add your styles for Home component */
 .village-list {
   margin-top: 20px;
 }
