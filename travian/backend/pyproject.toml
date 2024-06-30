@@ -15,6 +15,7 @@ PyJWT = "^2.4.0"
 
 
 python-dotenv = "^1.0.1"
+python-jose = "^3.3.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

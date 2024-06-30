@@ -52,7 +52,6 @@ async def login(
         data={"id": user.id, "email": user.email},
         expires_delta=timedelta(minutes=30),
     )
-    print(user)
     response.set_cookie(
         key="access_token", value=f"Bearer {access_token}", httponly=True
     )  # set HttpOnly cookie in response
