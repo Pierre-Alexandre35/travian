@@ -49,5 +49,31 @@ Trello board is available [here](https://trello.com/b/v930U8AG/travian)
 
 
 
+- MPA
+- Axios Create a service to handle API calls. For instance, create a file named api.js:
+// api.js
 
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: '/api/v1',  // Assuming your API endpoint is at /api/v1
+  withCredentials: true  // Important for sending cookies with requests
+});
+
+export default apiClient;
+
+- Pinia
+
+
+poetry run python asgi.py
 brew install python-tk@3.12
+
+npm install 
+npm run dev
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/api/v1/token' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=&username=pierre12&password=12341234&scope=&client_id=&client_secret='
+{"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJwaWVycmUxMiIsImV4cCI6MTcxOTY1MTg1N30.En0cXZR-Yl1O13gTp5pSWmkUiRkNdjVUmcMXKuH4S9E","token_type":"bearer"}%
