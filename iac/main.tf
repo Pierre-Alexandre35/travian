@@ -45,7 +45,7 @@ resource "google_project_iam_member" "gcs_deploy_sa_object_viewer" {
   role    = "roles/storage.objectViewer"
 }
 
-# Assign Object Creator Role to Service Account for GCS
+# Assign Object Creator Role to Service Account for GCS (new role added)
 resource "google_storage_bucket_iam_member" "gcs_deploy_sa_object_creator" {
   bucket = google_storage_bucket.static_site.name  # Reference your bucket
   member = "serviceAccount:${google_service_account.gcs_deploy_sa.email}"
