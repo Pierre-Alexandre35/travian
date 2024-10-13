@@ -27,13 +27,19 @@ jobs:
         run: npm run build
 
       - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: "voltaic-sensor-438416-h9"
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
       - name: Upload to GCS
         run: |
-          gsutil -m rsync -r travian/frontend/dist gs://peillac.xyz # Correct path for the dist folder
+          gsutil -m rsync -r travian/frontend/dist gs://peillac.xyz
 
       - name: Make GCS objects public
         run: gsutil iam ch allUsers:objectViewer gs://peillac.xyz
