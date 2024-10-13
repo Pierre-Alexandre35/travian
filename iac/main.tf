@@ -1,87 +1,73 @@
-/*
- service account for CI CD
- */
-
-resource "google_service_account" "sa-name" {
-  account_id = "github-ci-cd-service-account"
-  display_name = "github-ci-cd-service-account"
+# Google Provider Configuration
+provider "google" {
+  project = "voltaic-sensor-438416-h9"  # Your existing project
+  region  = "europe-west9"  # Your existing region
 }
 
-resource "google_project_iam_member" "member-role" {
-  for_each = toset([
-    "roles/iam.serviceAccountTokenCreator",
-    "roles/storage.objectAdmin",
-  ])
-  role = each.key
-  member = "serviceAccount:${google_service_account.sa-name.email}"
-  project = var.project_id
-}
+# Google Storage Bucket Configuration for Static Website
+resource "google_storage_bucket" "static_site" {
+  name          = "peillac.xyz"  # Your bucket name
+  location      = "EU"
+  force_destroy = true
 
-/*
- front end 
- */
-resource "google_storage_bucket" "public_domain_name" {
-  name          = "travian.lol"
-  location      = var.region
-  project       = var.project_id
-  storage_class = "STANDARD"
-  uniform_bucket_level_access = true
-  versioning {
-    enabled = false
-  }
+  uniform_bucket_level_access = true  # Bucket-level access control
+
   website {
-    main_page_suffix = "index.html"
-    not_found_page   = "error/404.html"
+    main_page_suffix = "index.html"  # Website settings
+    not_found_page   = "404.html"
+  }
+
+  cors {  # CORS configuration
+    origin          = ["http://image-store.com"]
+    method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
+    response_header = ["*"]
+    max_age_seconds = 3600
   }
 }
 
-resource "google_storage_bucket_iam_member" "member" {
-  bucket = google_storage_bucket.public_domain_name.name
+# Service Account for GCS Deployment
+resource "google_service_account" "gcs_deploy_sa" {
+  account_id   = "gcs-deploy-sa"
+  display_name = "GCS Deploy Service Account"
+}
+
+# Assign Storage Admin Role to Service Account
+resource "google_project_iam_member" "gcs_deploy_sa_storage_admin" {
+  project = "voltaic-sensor-438416-h9"  # Use the same project
+  member  = "serviceAccount:${google_service_account.gcs_deploy_sa.email}"
+  role    = "roles/storage.admin"
+}
+
+# Assign Object Viewer Role to Service Account (for public access)
+resource "google_project_iam_member" "gcs_deploy_sa_object_viewer" {
+  project = "voltaic-sensor-438416-h9"
+  member  = "serviceAccount:${google_service_account.gcs_deploy_sa.email}"
+  role    = "roles/storage.objectViewer"
+}
+
+# Assign Object Creator Role to Service Account for GCS
+resource "google_storage_bucket_iam_member" "gcs_deploy_sa_object_creator" {
+  bucket = google_storage_bucket.static_site.name  # Reference your bucket
+  member = "serviceAccount:${google_service_account.gcs_deploy_sa.email}"
+  role   = "roles/storage.objectCreator"
+}
+
+# Make the GCS Bucket Public (allow all users to view objects)
+resource "google_storage_bucket_iam_member" "gcs_public_access" {
+  bucket = google_storage_bucket.static_site.name  # Reference your bucket
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
 
-/*
- back end 
- */
- resource "google_cloud_run_service" "run_service" {
-  name = "app"
-  location = "us-central1"
-
-  template {
-    spec {
-      containers {
-        image = "gcr.io/google-samples/hello-app:1.0"
-      }
-    }
-        metadata {
-      annotations = {
-        "autoscaling.knative.dev/maxScale"      = "1"
-        "run.googleapis.com/cloudsql-instances" = google_sql_database_instance.instance.connection_name
-        "run.googleapis.com/client-name"        = "terraform"
-      }
-    }
-  }
-
-  traffic {
-    percent         = 100
-    latest_revision = true
-  }
-
-  # Waits for the Cloud Run API to be enabled
-  depends_on = [google_project_service.enabled_services]
+# Create a Service Account Key for GitHub Actions Authentication
+resource "google_service_account_key" "gcs_deploy_key" {
+  service_account_id = google_service_account.gcs_deploy_sa.id
+  private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
 }
 
-/*
-database 
- */
-resource "google_sql_database_instance" "instance" {
-  name             = "cloudrun-sql"
-  region           = var.region
-  database_version = "POSTGRES_15"
-  settings {
-    tier = "db-f1-micro"
-  }
-
-  deletion_protection  = "true"
+# Output the Service Account Key for GitHub Actions
+output "gcs_deploy_sa_key" {
+  value       = google_service_account_key.gcs_deploy_key.private_key
+  sensitive   = true
+  description = "Service account key for deploying to GCS."
 }
