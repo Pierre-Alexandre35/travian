@@ -1,7 +1,7 @@
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status, Request
+from fastapi import Depends
 from src.db.services.user import create_user, get_user_by_email, user_exits
-from src.db.schemas.user import UserCreate, TokenData
+from src.db.schemas.user import UserCreate, UserJWTToken
 from src.core.security import password_verify, oauth2_scheme
 from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
 from src.db.conn import Database
@@ -26,31 +26,18 @@ def authenticate_user(session: Database, email: str, password: str) -> UserCreat
 
 
 async def get_current_user(
-    request: Request, session=Depends(get_db)
-) -> UserCreate:
-    token = request.cookies.get("access_token")
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    session=Depends(get_db), token: str = Depends(oauth2_scheme)
+) -> None:
     try:
-        token = token.split(" ")[1]  # Remove "Bearer " prefix
         payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTH_TOKEN_ALGO])
         email: str = payload.get("email")
         id: int = payload.get("id")
-        if email is None or id is None:
-            raise credentials_exception
-        token_data = TokenData(id=id, email=email)
-    except JWTError:
-        raise credentials_exception
+        if email is None:
+            print("credentials_exception")
+        token_data = UserJWTToken(id=id, email=email)
+    except jwt.PyJWTError:
+        print("credentials_exception")
     user = get_user_by_email(session, token_data.email)
     if user is None:
-        raise credentials_exception
+        print("credentials_exception")
     return user
