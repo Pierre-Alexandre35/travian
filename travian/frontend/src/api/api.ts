@@ -1,5 +1,3 @@
-// api.ts
-
 import axios, { AxiosInstance } from 'axios';
 
 const apiClient: AxiosInstance = axios.create({
@@ -7,8 +5,28 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true  // Important to include cookies
 });
 
+export const login = async (username: string, password: string) => {
+  const response = await apiClient.post('/token', 
+    new URLSearchParams({
+      username: username,
+      password: password
+    }), 
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+  );
+  return response.data;
+};
+
 export const getAllVillages = async () => {
   const response = await apiClient.get('/all_villages');
+  return response.data;
+};
+
+export const getUserInfo = async () => {
+  const response = await apiClient.get('/me');
   return response.data;
 };
 

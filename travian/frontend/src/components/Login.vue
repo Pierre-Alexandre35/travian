@@ -1,5 +1,3 @@
-<!-- Login.vue -->
-
 <template>
   <div class="container">
     <h1>Login</h1>

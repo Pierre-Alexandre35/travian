@@ -1,5 +1,3 @@
-// router.ts
-
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import LoginPage from '@/views/LoginPage.vue';
 import HomePage from '@/views/HomePage.vue';
@@ -15,11 +13,15 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-
   if (to.matched.some(record => record.meta.requiresAuth) && !authStore.isLoggedIn) {
-    next('/');
+    await authStore.initializeStore();  // Ensure store is initialized
+    if (!authStore.isLoggedIn) {
+      next('/');
+    } else {
+      next();
+    }
   } else {
     next();
   }
