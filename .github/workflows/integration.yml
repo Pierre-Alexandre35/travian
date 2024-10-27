@@ -29,7 +29,7 @@ jobs:
         run: npm run lint
 
   backend:
-    name: Backend Lint & Test.
+    name: Backend Lint & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,7 +50,7 @@ jobs:
       - name: Configure Poetry in PATH
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
 
-      - name: Configure Poetry Settings
+      - name: Set up In-Project Virtual Environment
         run: poetry config virtualenvs.in-project true
 
       - name: Cache Poetry and Dependencies
@@ -63,6 +63,19 @@ jobs:
 
       - name: Install Dependencies with Poetry
         run: poetry install -vv
+
+      - name: Capture Execution Environment
+        id: poetry_env
+        run: poetry env info --path
+
+      - name: Export Main-Only Requirements
+        run: poetry export --only main --without-hashes --output /tmp/requirements.txt
+
+      - name: Install Requirements in Virtual Environment
+        run: pip install -r /tmp/requirements.txt
+        env:
+          VIRTUAL_ENV: ${{ steps.poetry_env.outputs.stdout }}
+          PATH: ${{ steps.poetry_env.outputs.stdout }}/bin:$PATH
 
       - name: Lint
         run: poetry run flake8 .
