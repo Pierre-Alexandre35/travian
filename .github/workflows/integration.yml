@@ -29,7 +29,7 @@ jobs:
         run: npm run lint
 
   backend:
-    name: Backend Lint & Test
+    name: Backend Lint & Test.
     runs-on: ubuntu-latest
     defaults:
       run:
