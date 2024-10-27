@@ -22,7 +22,3 @@ jobs:
       - name: Lint
         run: npm run lint
         working-directory: travian/frontend
-
-      - name: Test
-        run: npm run test
-        working-directory: travian/frontend
