@@ -5,7 +5,7 @@ from src.db.schemas import villages as village_schemas
 def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVillages:
     print(user_id)
     sql = """
-        SELECT 
+        SELECT
           villages.id,
           villages.name,
           villages.owner_id,
@@ -13,8 +13,8 @@ def get_user_villages(session: Database, user_id: int) -> village_schemas.UserVi
           villages.population
         FROM
           transactions.villages as villages
-        LEFT JOIN 
-          master.map as map 
+        LEFT JOIN
+          master.map as map
           ON villages.position_id = map.id
         WHERE
           villages.owner_id = (%s)
@@ -40,7 +40,7 @@ def create_village(
 ) -> int:
     # SQL statement with the RETURNING clause to get the newly generated id
     sql = """
-        INSERT INTO transactions.villages (name, population, owner_id, position_id) 
+        INSERT INTO transactions.villages (name, population, owner_id, position_id)
         VALUES (%s, %s, %s, %s)
         RETURNING id
         """
@@ -66,8 +66,8 @@ def get_village_infos(
     session: Database,
 ):
     sql = """
-        SELECT name, population, owner_id, position_id 
-        FROM villages 
+        SELECT name, population, owner_id, position_id
+        FROM villages
         WHERE village_id = (%s)
         """
     params = [village_id]

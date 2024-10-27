@@ -18,6 +18,7 @@ python-jose = "^3.3.0"
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
 black = "^24.10.0"
+autopep8 = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core"]

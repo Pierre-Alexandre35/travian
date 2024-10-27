@@ -27,5 +27,5 @@ class UserAuth(BaseModel):
 class UserJWTToken(BaseModel):
     """current authenticated User data stored in the JWT Web Token"""
 
-    id: str  ##UUID
+    id: str  # UUID
     email: str
