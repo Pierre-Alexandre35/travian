@@ -12,10 +12,12 @@ fastapi = "^0.78.0"
 psycopg2 = "^2.9.3"
 python-multipart = "^0.0.5"
 PyJWT = "^2.4.0"
-
-
 python-dotenv = "^1.0.1"
 python-jose = "^3.3.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^6.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
