@@ -7,25 +7,22 @@ jobs:
     name: Frontend Lint & Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: "18"
+          node-version: "18" # Ensure the correct Node.js version
 
-      - name: Install Dependencies
-        run: |
-          npm install
-          working-directory: travian/frontend
+      - name: Install dependencies
+        working-directory: travian/frontend # Change to frontend directory
+        run: npm install
 
       - name: Lint
-        run: |
-          npm run lint
-          working-directory: travian/frontend
+        run: npm run lint
+        working-directory: travian/frontend
 
       - name: Test
-        run: |
-          npm run test
-          working-directory: travian/frontend
+        run: npm run test
+        working-directory: travian/frontend
