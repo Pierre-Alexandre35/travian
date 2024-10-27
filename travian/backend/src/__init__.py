@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 def create_app() -> FastAPI:
-    root_app = FastAPI(title="Travian API",version="0.1")
+    root_app = FastAPI(title="Travian API", version="0.1")
 
     root_app.add_middleware(
         CORSMiddleware,

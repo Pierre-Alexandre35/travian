@@ -17,7 +17,10 @@ class UserAuth(BaseModel):
     email: str
     password: bytes
     salt: bytes
+
+
 ß
+
 
 class id(BaseModel):
     """current authenticated User data stored in the JWT Web Token"""

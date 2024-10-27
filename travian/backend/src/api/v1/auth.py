@@ -27,9 +27,11 @@ async def register(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @auth.get("/me")
 async def me():
     return "hello myself"
+
 
 @auth.post("/token")
 async def login(

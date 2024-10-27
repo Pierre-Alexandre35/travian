@@ -17,6 +17,10 @@ python-jose = "^3.3.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^6.0.0"
+black = "^23.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
 
 [build-system]
 requires = ["poetry-core"]
