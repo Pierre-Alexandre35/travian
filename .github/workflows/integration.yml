@@ -23,3 +23,79 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+  backend:
+    name: Backend Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: travian/backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Lint
+        run: |
+          flake8 .
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          
+      - name: Configure Poetry in PATH
+        run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Configure Poetry Settings
+        run: poetry config virtualenvs.in-project true
+
+      - name: Cache Poetry and Dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install Dependencies with Poetry
+        run: poetry install -vv
+
+  # Quality checks using different linters
+  check-quality:
+    runs-on: ubuntu-latest
+    needs: install-deps
+    name: Quality Checks
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Bandit
+        run: poetry run bandit -r src/
+
+      - name: Run Black
+        run: poetry run black --check .
+
+      - name: Run Flake8
+        run: poetry run flake8 .
+
+      - name: Run Isort
+        run: poetry run isort --check-only .
+
+      - name: Run Safety
+        run: poetry run safety check
