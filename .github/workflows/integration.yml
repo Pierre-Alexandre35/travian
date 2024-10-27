@@ -94,11 +94,11 @@ jobs:
       - name: Run Black
         run: poetry run black --check .
 
-      - name: Run Flake8 --exclude .venv
+      - name: Run Flake8 --exclude ./.venv/
         run: poetry run flake8 .
 
-      - name: Run Isort --exclude .venv
+      - name: Run Isort --exclude ./.venv/
         run: poetry run isort --check-only .
 
-      - name: Run Safety --exclude .venv
+      - name: Run Safety --exclude ./.venv/
         run: poetry run safety check
