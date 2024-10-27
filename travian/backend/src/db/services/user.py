@@ -14,9 +14,13 @@ def create_user(
     is_active = True
     is_superuser = False
     sql = """
-        INSERT INTO transactions.users (uuid, email, active, superuser, created_on, password, password_salt, tribe_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """
+    INSERT INTO transactions.users (
+        uuid, email, active, superuser, created_on, 
+        password, password_salt, tribe_id
+    ) VALUES (
+        %s, %s, %s, %s, %s, %s, %s, %s
+    )
+    """
     params = (
         uuid,
         user.email,

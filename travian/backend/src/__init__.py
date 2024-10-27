@@ -1,9 +1,7 @@
-from fastapi import FastAPI, Depends, Response
+from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from src.api.v1.village import village_router
 from src.api.v1.auth import auth_router
-from src.core.auth import get_current_user
-from src.core.config import *
 from fastapi.middleware.cors import CORSMiddleware
 
 

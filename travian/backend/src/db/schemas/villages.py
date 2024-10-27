@@ -1,5 +1,4 @@
 # pylint: disable=no-name-in-module, too-few-public-methods
-from turtle import position
 from typing import Optional
 
 from pydantic import BaseModel, Field

@@ -3,7 +3,6 @@ import os
 import hmac
 from datetime import datetime, timedelta
 import jwt
-from fastapi.security import OAuth2PasswordBearer
 from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
 
 

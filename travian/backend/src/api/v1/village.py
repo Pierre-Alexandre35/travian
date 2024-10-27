@@ -3,10 +3,8 @@ from src.db.utils import get_db
 from src.core.auth import get_current_user
 from src.db.services.village import (
     create_village,
-    get_village_infos,
     get_user_villages,
 )
-from src.db.utils import get_db
 from src.db.schemas.villages import NewVillage, NewVillageRequest, UserVillages
 
 village_router = village = APIRouter()

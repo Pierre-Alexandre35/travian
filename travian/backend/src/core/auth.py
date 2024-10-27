@@ -1,4 +1,4 @@
-from jose import JWTError, jwt
+from jose import jwt
 from fastapi import Depends
 from src.db.services.user import create_user, get_user_by_email, user_exits
 from src.db.schemas.user import UserCreate, UserJWTToken

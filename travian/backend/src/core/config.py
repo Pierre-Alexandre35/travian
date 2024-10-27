@@ -2,9 +2,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path="local.env")
-print(
-    "123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789"
-)
 
 # FastAPI
 AUTH_TOKEN_ALGO = "HS256"
