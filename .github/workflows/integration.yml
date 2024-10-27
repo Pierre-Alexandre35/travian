@@ -1,0 +1,31 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  frontend:
+    name: Frontend Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          working-directory: travian/frontend
+
+      - name: Lint
+        run: |
+          npm run lint
+          working-directory: travian/frontend
+
+      - name: Test
+        run: |
+          npm run test
+          working-directory: travian/frontend
