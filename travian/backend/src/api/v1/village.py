@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
-from src.db.utils import get_db
+
 from src.core.auth import get_current_user
-from src.db.services.village import (
-    create_village,
-    get_user_villages,
-)
 from src.db.schemas.villages import NewVillage, NewVillageRequest, UserVillages
+from src.db.services.village import create_village, get_user_villages
+from src.db.utils import get_db
 
 village_router = village = APIRouter()
 

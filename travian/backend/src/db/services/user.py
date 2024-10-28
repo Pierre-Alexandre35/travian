@@ -1,8 +1,9 @@
 import datetime
 from uuid import uuid4
-from src.db.schemas import user as user_schemas
-from src.db.conn import Database
+
 from src.core.security import password_hash
+from src.db.conn import Database
+from src.db.schemas import user as user_schemas
 
 
 def create_user(

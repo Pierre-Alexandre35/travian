@@ -1,10 +1,11 @@
-from jose import jwt
 from fastapi import Depends
-from src.db.services.user import create_user, get_user_by_email, user_exits
-from src.db.schemas.user import UserCreate, UserJWTToken
-from src.core.security import password_verify, oauth2_scheme
-from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
+from jose import jwt
+
+from src.core.config import AUTH_TOKEN_ALGO, SECRET_KEY
+from src.core.security import oauth2_scheme, password_verify
 from src.db.conn import Database
+from src.db.schemas.user import UserCreate, UserJWTToken
+from src.db.services.user import create_user, get_user_by_email, user_exits
 from src.db.utils import get_db
 
 
