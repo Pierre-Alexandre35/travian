@@ -80,14 +80,6 @@ jobs:
       - name: Lint
         run: poetry run flake8 --exclude .venv
 
-  check-quality:
-    name: Quality Checks
-    runs-on: ubuntu-latest
-    needs: backend
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Run Bandit
         run: poetry run bandit -r src/
 
