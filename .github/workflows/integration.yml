@@ -64,18 +64,13 @@ jobs:
       - name: Install Dependencies with Poetry
         run: poetry install -vv
 
-      - name: Capture Execution Environment
-        id: poetry_env
-        run: poetry env info --path
-
-      - name: Export Main-Only Requirements
-        run: poetry export --only main --without-hashes --output /tmp/requirements.txt
-
-      - name: Install Requirements in Virtual Environment
-        run: pip install -r /tmp/requirements.txt
-        env:
-          VIRTUAL_ENV: ${{ steps.poetry_env.outputs.stdout }}
-          PATH: ${{ steps.poetry_env.outputs.stdout }}/bin:$PATH
+      - name: Save Poetry Cache Directory
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pypoetry-
 
   backend:
     name: Backend Lint & Test
@@ -93,8 +88,34 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Set Poetry Environment Path
+      - name: Restore Poetry Cache Directory
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-pypoetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pypoetry-
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Configure Poetry in PATH
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Poetry and Dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Set up In-Project Virtual Environment
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install Dependencies with Poetry
+        run: poetry install -vv
 
       - name: Lint
         run: poetry run flake8 --exclude .venv
