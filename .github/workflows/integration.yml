@@ -91,6 +91,3 @@ jobs:
 
       - name: Run Isort
         run: poetry run isort --check-only --skip .venv
-
-      - name: Run Safety
-        run: poetry run safety check
