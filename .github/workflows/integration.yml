@@ -28,8 +28,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-  backend:
-    name: Backend Lint & Test
+  setup:
+    name: Backend Environment Setup
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -76,6 +76,25 @@ jobs:
         env:
           VIRTUAL_ENV: ${{ steps.poetry_env.outputs.stdout }}
           PATH: ${{ steps.poetry_env.outputs.stdout }}/bin:$PATH
+
+  backend:
+    name: Backend Lint & Test
+    runs-on: ubuntu-latest
+    needs: setup
+    defaults:
+      run:
+        working-directory: travian/backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Set Poetry Environment Path
+        run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
 
       - name: Lint
         run: poetry run flake8 --exclude .venv
