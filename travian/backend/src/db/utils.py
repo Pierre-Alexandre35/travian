@@ -1,5 +1,10 @@
-from src.core.config import (DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD,
-                             DATABASE_PORT, DATABASE_USERNAME)
+from src.core.config import (
+    DATABASE_HOST,
+    DATABASE_NAME,
+    DATABASE_PASSWORD,
+    DATABASE_PORT,
+    DATABASE_USERNAME,
+)
 from src.db.conn import Database
 
 
