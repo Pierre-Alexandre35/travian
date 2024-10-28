@@ -91,3 +91,30 @@ jobs:
 
       - name: Run Isort
         run: poetry run isort --check-only --skip .venv src/
+
+  database:
+    name: Database Setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: travian/database/sql
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up PostgreSQL
+        uses: Harmon758/postgresql-action@v1.2
+        with:
+          postgresql version: "13"
+          postgresql user: "postgres"
+          postgresql password: "password"
+          postgresql database: "testdb"
+          postgresql port: 5432
+
+      - name: Run SQL Scripts
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U postgres -d testdb -f init.sql
+          psql -h localhost -U postgres -d testdb -f data.sql
+          psql -h localhost -U postgres -d testdb -f dummy.sql
