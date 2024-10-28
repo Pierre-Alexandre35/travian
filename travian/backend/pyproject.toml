@@ -12,13 +12,26 @@ fastapi = "^0.78.0"
 psycopg2 = "^2.9.3"
 python-multipart = "^0.0.5"
 PyJWT = "^2.4.0"
-
-
 python-dotenv = "^1.0.1"
 python-jose = "^3.3.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+black = "^24.10.0"
+autopep8 = "^2.0.0"
+bandit = "^1.7.10"
+isort = "^5.13.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-foo='asgi:__main__'
+foo = 'asgi:__main__'
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+line_length = 88

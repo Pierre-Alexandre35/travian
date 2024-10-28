@@ -1,7 +1,9 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
-from src.core.auth import sign_up_new_user, authenticate_user
+
+from src.core.auth import authenticate_user, sign_up_new_user
 from src.core.security import create_access_token
 from src.db.utils import get_db
 
@@ -27,9 +29,11 @@ async def register(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
 @auth.get("/me")
 async def me():
     return "hello myself"
+
 
 @auth.post("/token")
 async def login(

@@ -1,8 +1,9 @@
 import datetime
 from uuid import uuid4
-from src.db.schemas import user as user_schemas
-from src.db.conn import Database
+
 from src.core.security import password_hash
+from src.db.conn import Database
+from src.db.schemas import user as user_schemas
 
 
 def create_user(
@@ -14,18 +15,31 @@ def create_user(
     is_active = True
     is_superuser = False
     sql = """
-        INSERT INTO transactions.users (uuid, email, active, superuser, created_on, password, password_salt, tribe_id) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """
-    params = (uuid, user.email, is_active, is_superuser, now, hashed_password, salt, '1')
+    INSERT INTO transactions.users (
+        uuid, email, active, superuser, created_on,
+        password, password_salt, tribe_id
+    ) VALUES (
+        %s, %s, %s, %s, %s, %s, %s, %s
+    )
+    """
+    params = (
+        uuid,
+        user.email,
+        is_active,
+        is_superuser,
+        now,
+        hashed_password,
+        salt,
+        "1",
+    )
     session.update_rows(sql, params)
     return user_schemas.UserJWTToken(id=uuid, email=user.email)
 
 
 def user_exits(session: Database, email: str) -> bool:
     sql = """
-        SELECT COUNT(id) 
-        FROM transactions.users 
+        SELECT COUNT(id)
+        FROM transactions.users
         WHERE email = (%s)
         """
     params = [email]
@@ -36,7 +50,7 @@ def user_exits(session: Database, email: str) -> bool:
 def get_user_by_email(session: Database, email: str) -> user_schemas.UserAuth:
     sql = """
         SELECT id, uuid, email, password, password_salt
-        FROM transactions.users 
+        FROM transactions.users
         WHERE email = (%s)
         """
     params = [email]

@@ -1,20 +1,16 @@
 import hashlib
-import os
 import hmac
+import os
 from datetime import datetime, timedelta
+from typing import Dict, Optional
+
 import jwt
-from fastapi.security import OAuth2PasswordBearer
-from src.core.config import SECRET_KEY, AUTH_TOKEN_ALGO
-
-
-from fastapi.security import OAuth2
+from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
-from fastapi import Request
+from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
-from fastapi import HTTPException
-from fastapi import status
-from typing import Optional
-from typing import Dict
+
+from src.core.config import AUTH_TOKEN_ALGO, SECRET_KEY
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):

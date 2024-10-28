@@ -1,14 +1,13 @@
-from fastapi import FastAPI, Depends, Response
-from fastapi.responses import RedirectResponse
-from src.api.v1.village import village_router
-from src.api.v1.auth import auth_router
-from src.core.auth import get_current_user
-from src.core.config import *
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+
+from src.api.v1.auth import auth_router
+from src.api.v1.village import village_router
 
 
 def create_app() -> FastAPI:
-    root_app = FastAPI(title="Travian API",version="0.1")
+    root_app = FastAPI(title="Travian API", version="0.1")
 
     root_app.add_middleware(
         CORSMiddleware,

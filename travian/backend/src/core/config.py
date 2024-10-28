@@ -1,11 +1,12 @@
 import os
+
 from dotenv import load_dotenv
+
 load_dotenv(dotenv_path="local.env")
-print("123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789")
 
 # FastAPI
-AUTH_TOKEN_ALGO = "HS256"
-SECRET_KEY = "wwew12"
+AUTH_TOKEN_ALGO = os.getenv("AUTH_TOKEN_ALGO")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Database
 DATABASE_ENGINE = "POSTGRES"

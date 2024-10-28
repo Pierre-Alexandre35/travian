@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2.extras import DictCursor, DictRow
 
+
 class Database:
     """PostgreSQL Database class."""
 
@@ -62,4 +63,3 @@ class Database:
     def update_rows(self, query: str, parameters=None, fetch=False) -> str:
         """Run a SQL query to update rows in table, optionally fetching a result."""
         return self.execute_query(query, parameters, fetch)
-
