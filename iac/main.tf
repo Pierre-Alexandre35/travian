@@ -1,23 +1,15 @@
-# Google Provider Configuration
-provider "google" {
-  project = "voltaic-sensor-438416-h9"  # Your existing project
-  region  = "europe-west9"  # Your existing region
-}
-
-# Google Storage Bucket Configuration for Static Website
 resource "google_storage_bucket" "static_site" {
-  name          = "peillac.xyz"  # Your bucket name
+  name          = var.bucket_name
   location      = "EU"
   force_destroy = true
-
-  uniform_bucket_level_access = true  # Bucket-level access control
+  uniform_bucket_level_access = true
 
   website {
-    main_page_suffix = "index.html"  # Website settings
+    main_page_suffix = "index.html"
     not_found_page   = "404.html"
   }
 
-  cors {  # CORS configuration
+  cors {
     origin          = ["http://image-store.com"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
@@ -25,9 +17,8 @@ resource "google_storage_bucket" "static_site" {
   }
 }
 
-# Service Account for GCS Deployment
 resource "google_service_account" "gcs_deploy_sa" {
-  account_id   = "gcs-deploy-sa"
+  account_id   = var.service_account_id
   display_name = "GCS Deploy Service Account"
 }
 
