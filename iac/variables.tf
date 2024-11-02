@@ -10,6 +10,11 @@ variable "folder_name" {
   default     = "my-projects-folder"
 }
 */
+variable "existing_project_id" {
+  description = "ID of the manually created Google Cloud project"
+  type        = string
+  default     = "travian-3919"  # Set this to your actual project ID
+}
 variable "region" {}
 variable "bucket_name" {}
 variable "service_account_id" {}
