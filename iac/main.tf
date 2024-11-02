@@ -5,9 +5,17 @@ resource "random_id" "project_suffix" {
 
 # Create the Google Cloud project with a generated project ID
 resource "google_project" "gcp_prod_project" {
-  name            = "travian-prod-${random_id.project_suffix.hex}"
-  project_id      = "travian-${random_id.project_suffix.hex}"
+  name            = "travian-prod-3919"
+  project_id      = "travian-3919"
+  #name            = "travian-prod-${random_id.project_suffix.hex}"
+  #project_id      = "travian-${random_id.project_suffix.hex}"
   billing_account = var.billing_account_id   
+}
+
+# Call the API module
+module "api" {
+  source     = "./modules/api"
+  project_id = google_project.gcp_prod_project.project_id
 }
 
 # Create a Google Storage Bucket within the newly created project
@@ -103,8 +111,9 @@ resource "google_project_iam_member" "cloud_build_artifact_registry_pusher" {
   role    = "roles/artifactregistry.writer"
 }
 
-# Define Cloud Run service
 resource "google_cloud_run_service" "python_backend" {
+  depends_on = [module.api]
+
   name     = "python-backend"
   project  = google_project.gcp_prod_project.project_id
   location = var.region
@@ -112,7 +121,7 @@ resource "google_cloud_run_service" "python_backend" {
   template {
     spec {
       containers {
-        image = "gcr.io/cloudrun/hello"  # Public Cloud Run Hello World image
+        image = "gcr.io/cloudrun/hello"
         resources {
           limits = {
             memory = "512Mi"
@@ -125,12 +134,12 @@ resource "google_cloud_run_service" "python_backend" {
 
   autogenerate_revision_name = true
 
-  # Optional: Allow unauthenticated access
   traffic {
     percent         = 100
     latest_revision = true
   }
 }
+
 
 # Allow public access to Cloud Run service
 resource "google_cloud_run_service_iam_member" "invoker" {
