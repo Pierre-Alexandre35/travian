@@ -32,8 +32,6 @@ jobs:
           -var="billing_account_id=${{ secrets.GCP_BILLING_ACCOUNT_ID }}"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
 
       - name: Get project ID from Terraform output
         working-directory: iac
