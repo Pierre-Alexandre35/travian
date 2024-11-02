@@ -25,11 +25,12 @@ jobs:
       - name: Apply Terraform
         working-directory: iac
         id: terraform
-        run: terraform apply -auto-approve -- \
-          -var="region=${{ secrets.GCP_REGION }}" \
-          -var="bucket_name=${{ secrets.GCP_BUCKET_NAME }}" \
-          -var="service_account_id=${{ secrets.GCP_SERVICE_ACCOUNT_ID }}" \
-          -var="billing_account_id=${{ secrets.GCP_BILLING_ACCOUNT_ID }}"
+        run: |
+          terraform apply -auto-approve \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="bucket_name=${{ secrets.GCP_BUCKET_NAME }}" \
+            -var="service_account_id=${{ secrets.GCP_SERVICE_ACCOUNT_ID }}" \
+            -var="billing_account_id=${{ secrets.GCP_BILLING_ACCOUNT_ID }}"
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
 
