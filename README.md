@@ -48,3 +48,9 @@ terraform init
 terraform plan -var-file="prod.tfvars"
 terraform apply -var-file="prod.tfvars"
 ```
+
+Backend
+
+- Artifact Registry: This will store your Docker image, making it accessible for Cloud Run deployment.
+- Cloud Run: This service will host your Dockerized Python backend.
+- Cloud Build Permissions: Enable Cloud Build to deploy images from Artifact Registry to Cloud Run.
