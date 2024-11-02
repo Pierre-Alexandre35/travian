@@ -85,3 +85,64 @@ resource "google_project_iam_member" "cloud_build_compute_role" {
   member  = "serviceAccount:${google_project.gcp_prod_project.number}-compute@developer.gserviceaccount.com"
   role    = "roles/cloudbuild.builds.builder"
 }
+
+# Create Artifact Registry repository for Docker images
+resource "google_artifact_registry_repository" "docker_repo" {
+  project     = google_project.gcp_prod_project.project_id
+  location    = var.region
+  repository_id = "python-backend-repo"
+  description = "Docker repository for Cloud Run"
+  format      = "DOCKER"
+}
+
+
+# Assign Artifact Registry permissions to Cloud Build
+resource "google_project_iam_member" "cloud_build_artifact_registry_pusher" {
+  project = google_project.gcp_prod_project.project_id
+  member  = "serviceAccount:${google_project.gcp_prod_project.number}@cloudbuild.gserviceaccount.com"
+  role    = "roles/artifactregistry.writer"
+}
+
+# Define Cloud Run service
+resource "google_cloud_run_service" "python_backend" {
+  name     = "python-backend"
+  project  = google_project.gcp_prod_project.project_id
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/cloudrun/hello"  # Public Cloud Run Hello World image
+        resources {
+          limits = {
+            memory = "512Mi"
+            cpu    = "1"
+          }
+        }
+      }
+    }
+  }
+
+  autogenerate_revision_name = true
+
+  # Optional: Allow unauthenticated access
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+}
+
+# Allow public access to Cloud Run service
+resource "google_cloud_run_service_iam_member" "invoker" {
+  project        = google_project.gcp_prod_project.project_id
+  location       = var.region
+  service        = google_cloud_run_service.python_backend.name
+  role           = "roles/run.invoker"
+  member         = "allUsers"
+}
+
+# Output Cloud Run URL
+output "cloud_run_url" {
+  value       = google_cloud_run_service.python_backend.status[0].url
+  description = "URL of the deployed Python backend on Cloud Run."
+}
