@@ -25,3 +25,10 @@ resource "google_project_service" "cloud_storage" {
   service = "storage.googleapis.com"
   disable_on_destroy = false
 }
+
+# Enable Cloud Billing API
+resource "google_project_service" "cloud_billing" {
+  project = var.project_id
+  service = "cloudbilling.googleapis.com"
+  disable_on_destroy = false
+}

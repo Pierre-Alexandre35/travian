@@ -1,3 +1,14 @@
+/* commented out: main reason is that terraform apply works locally but on the CI using service accounts cannot create projects without a parent (=organisation).
+However in order to create an organisation, we must sign up for Sign up for Google Workspace. So we keep the GCP "static" atm.
+
+resource "google_folder" "iac_project_folder" {
+  display_name = var.folder_name
+}
+
+output "folder_id" {
+  value = google_folder.iac_project_folder.id
+}
+
 # Generate a random suffix for the project ID
 resource "random_id" "project_suffix" {
   byte_length = 2  # 2 bytes = 4 hex characters (e.g., "abcd")
@@ -7,8 +18,16 @@ resource "random_id" "project_suffix" {
 resource "google_project" "gcp_prod_project" {
   name            = "travian-prod-3919"
   project_id      = "travian-3919"
+  folder_id      = var.folder_id
   #name            = "travian-prod-${random_id.project_suffix.hex}"
   #project_id      = "travian-${random_id.project_suffix.hex}"
+  billing_account = var.billing_account_id   
+}
+*/
+
+resource "google_project" "gcp_prod_project" {
+  name            = "travian-prod-3919"
+  project_id      = "travian-3919"
   billing_account = var.billing_account_id   
 }
 
