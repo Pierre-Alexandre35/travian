@@ -21,7 +21,7 @@ jobs:
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }} # Use credentials_json instead of service_account_key
 
       - name: Initialize Terraform
         working-directory: iac
@@ -59,7 +59,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }} # Use credentials_json here too
 
       - name: Upload to GCS
         run: |
