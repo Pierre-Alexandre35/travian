@@ -91,3 +91,33 @@ jobs:
 
       - name: Run Isort
         run: poetry run isort --check-only --skip .venv src/
+
+  database:
+    name: Database Setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: travian/database/sql
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+
+      - name: Start PostgreSQL
+        run: |
+          sudo service postgresql start
+          sudo -u postgres psql -c "CREATE DATABASE testdb;"
+          sudo -u postgres psql -c "CREATE USER ci_user WITH PASSWORD 'password';"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE testdb TO ci_user;"
+
+      - name: Run SQL Scripts
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U ci_user -d testdb -f init.sql
+          psql -h localhost -U ci_user -d testdb -f data.sql
+          psql -h localhost -U ci_user -d testdb -f dummy.sql
