@@ -3,6 +3,7 @@ name: Deploy to GCS
 on:
   push:
     branches:
+      - main
       - dev
 
 jobs:
@@ -13,57 +14,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          terraform_version: 1.5.3
+          node-version: "18" # Ensure the correct Node.js version
+
+      - name: Install dependencies
+        working-directory: travian/frontend # Change to frontend directory
+        run: npm install
+
+      - name: Build project
+        working-directory: travian/frontend # Change to frontend directory
+        run: npm run build
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }} # Use credentials_json instead of service_account_key
-
-      - name: Initialize Terraform
-        working-directory: iac
-        run: terraform init
-
-      - name: Apply Terraform
-        working-directory: iac
-        id: terraform
-        run: |
-          terraform apply -auto-approve \
-            -var="region=${{ secrets.GCP_REGION }}" \
-            -var="bucket_name=${{ secrets.GCP_BUCKET_NAME }}" \
-            -var="service_account_id=${{ secrets.GCP_SERVICE_ACCOUNT_ID }}" \
-            -var="billing_account_id=${{ secrets.GCP_BILLING_ACCOUNT_ID }}"
-
-      - name: Get project ID from Terraform output
-        working-directory: iac
-        id: get_gcp_project_id
-        run: echo "PROJECT_ID=$(terraform output -raw gcp_project_id)" >> $GITHUB_ENV
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        working-directory: travian/frontend
-        run: npm install
-
-      - name: Build project
-        working-directory: travian/frontend
-        run: npm run build
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
-          credentials_json: ${{ secrets.GCP_SA_KEY }} # Use credentials_json here too
+          project_id: "travian-4012"
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
 
       - name: Upload to GCS
         run: |
-          gsutil -m rsync -r travian/frontend/dist gs://peillac.xyz
+          gsutil -m rsync -r travian/frontend/dist gs://vallorium.com
 
       - name: Make GCS objects public
-        run: gsutil iam ch allUsers:objectViewer gs://peillac.xyz
+        run: gsutil iam ch allUsers:objectViewer gs://vallorium.com
