@@ -1,7 +1,9 @@
 # Travian Clone - Browser Game
 
 <p align="center">
-  <img src="docs/img/vallorium_logo_transparant.png" alt="Vallorium Logo" width="300"/>
+  <a href="https://vallorium.com">
+    <img src="docs/img/vallorium_logo_transparant.png" alt="Vallorium Logo" width="400"/>
+  </a>
 </p>
 
 I had this project in my mind since a long time. I've always been a huge fan of the popular browser game called Travian. Travian is a browser based MMOG where you compete with thousands of other players by buuilding up your village, building, ressources, fields, troops in order to have the largest global population accross the server.
