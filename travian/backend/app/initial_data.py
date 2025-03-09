@@ -1,7 +1,7 @@
 from faker import Faker
 from app.db.session import SessionLocal
 from app.db.crud import create_user, create_user_village
-from app.db.schemas import UserCreate, VillageCreate
+from app.db.schemas import UserCreate, VillageCreate, VillageFarmPlotTypesCreate
 from app.db.models import (
     TribeAttributes,
     Tribe,
@@ -11,6 +11,13 @@ from app.db.models import (
 )
 
 fake = Faker()
+
+
+def generate_farm_plot():
+    parts = sorted(fake.random_int(min=3, max=4) for _ in range(3))
+    wood, clay, iron = parts
+    crop = 14 - sum(parts)
+    return VillageFarmPlotCreate(wood=wood, clay=clay, iron=iron, crop=crop)
 
 
 def seed_tribes(db):
@@ -110,5 +117,6 @@ def init() -> None:
 
 
 if __name__ == "__main__":
-    init()
+    print(generate_farm_plot())
+    # init()
     print("Random user and village created")

@@ -2,6 +2,20 @@ from pydantic import BaseModel
 import typing as t
 
 
+class VillageFarmPlotTypesCreate(BaseModel):
+    wood: int
+    clay: int
+    iron: int
+    crop: int
+
+
+class VillageFarmPlotCreate(BaseModel):
+    wood: int
+    clay: int
+    iron: int
+    crop: int
+
+
 class TribeBase(BaseModel):
     name: str  # Romans, Teutons, Gauls
 
