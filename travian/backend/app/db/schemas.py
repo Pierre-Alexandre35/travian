@@ -2,14 +2,14 @@ from pydantic import BaseModel
 import typing as t
 
 
-class VillageFarmPlotTypesCreate(BaseModel):
-    wood: int
-    clay: int
-    iron: int
-    crop: int
-
-
 class VillageFarmPlotCreate(BaseModel):
+    farm_numer: int  # 13 farms in total
+    farm_type: str  # wood, clay, iron, crop --> maybe here we need to specify type from VillageFarmPlotTypesCreate, but how
+    farm_level: int  # 1-20 default is 1 at creation
+    farm_production: int  # production value of farm
+
+
+class VillageFarmPlotTypesCreate(BaseModel):
     wood: int
     clay: int
     iron: int

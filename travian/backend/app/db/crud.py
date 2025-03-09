@@ -40,7 +40,9 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def create_user_village(db: Session, village: schemas.VillageCreate):
+def create_user_village(
+    db: Session, village: schemas.VillageCreate
+) -> models.Village:
     db_village = models.Village(
         name=village.name,
         x=village.x,
