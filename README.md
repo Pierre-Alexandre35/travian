@@ -1,56 +1,57 @@
-# Travian Clone - Browser Game
+# Vallorium (Inspired by Travian)
 
-I had this project in my mind since a long time. I've always been a huge fan of the popular browser game called Travian. Travian is a browser based MMOG where you compete with thousands of other players by buuilding up your village, building, ressources, fields, troops in order to have the largest global population accross the server.
+**Vallorium** is a persistent, browser-based multiplayer strategy game inspired by [Travian](https://www.travian.com/).
 
-The goal of the project is to have exactly the same logic as the original, but with some UI enhancements, as well as being cross-platform.
+<p align="center">
+  <a href="https://vallorium.com/">
+    <img src="docs/img/vallorium_gameplay_2.png" alt="Vallorium Gameplay" width="60%" />
+  </a>
+</p>
 
-The project was on-hold for almost a year due to personnal issues, and I am now going to invest more time in this project and using a different approach. When I started Travian-clone, I was working on every aspects at the same time (front-end using Vue3, working on the data-modeling, user authentification, ...). This is currently a single-person company and it was very difficult to work on every aspect at the same time with a limited amount of time. So I decided to continue this project with a different approch:
+### 🌐 [Play Now at vallorium.com »](https://vallorium.com/)
 
-- Use Trello
-- Front-end at the end. Focus 100% on the back-end and data-modeling.
+Each player selects a tribe (Romans, Gauls, or Teutons) and starts with a single village.  
+A village includes 16 resource fields of four types: **corn, iron, wood**, and **clay**. These fields can be upgraded at a cost to increase their production. The village center allows players to build, upgrade, or demolish structures as their economy and strategy evolve.
 
-##
+A major part of the game is expansion:  
+You can either **conquer** other players’ villages or **found** new ones on unclaimed land.  
+To conquer, you'll need to raise an army—each tribe has its own unique units and strengths.
 
-### Option 1: Deploy on GCP (Google Cloud Plarform) using Terraform
+---
 
-Requirements:
+---
 
-- You must already have a GCP Account with an active billing account associated. Note that New customers get $300 in free credit to try Google Cloud products and build a proof of concept.
-- A verified domain name. Google Cloud Storage requires ownership verification of domains before creating buckets: https://search.google.com/search-console/welcome
+## 🛠️ Technologies
 
-1. Install the Google Cloud CLI, then initialize it by running the following command:
+- **Backend**: FastAPI
+- **Frontend**: Vue 3
+- **Database**: PostgreSQL (with plans to add **PostGIS** for geospatial support)
+- **Infrastructure as Code**: Terraform
 
-```bash
-gcloud auth application-default login
-```
+I chose **FastAPI** because it's the backend framework I'm most familiar with.  
+The project structure is based on the [Buutu FastAPI-React cookiecutter template](https://github.com/Buuntu/fastapi-react).
 
-2. Authenticate when using Terraform:
+Since many mechanics are based on distance and location (e.g., villages, resource fields), I plan to integrate **PostGIS** in the future to better support geospatial features.
 
-```bash
-gcloud auth application-default login
-```
+Though I’m not a frontend expert, I chose **Vue 3** for its approachability—even if its community is smaller compared to React.
 
-3. Create a Terraform input variables file by duplicating the example file:
+---
 
-```bash
-cp iac/terraform.tfvars.example iac/prod.tfvars
-```
+## ☁️ Hosting
 
-4. Fill up the `prod.tfvars` files with your varibles. You must change:
+The project is deployed on **Google Cloud Platform**:
 
-- `bucket_name` must be changed by your domain name.
-- `billing_account_id` is the billing account ID that is available here: https://console.cloud.google.com/billing
+- The frontend (Vue 3 app) is hosted via a **GCS bucket** (static hosting)
+- The backend (FastAPI API) runs on **Cloud Run** or **Compute Engine**
+- The **PostgreSQL** database is also hosted on **Compute Engine**
 
-5. Deploy the infrastructure:
+---
 
-```bash
-terraform init
-terraform plan -var-file="prod.tfvars"
-terraform apply -var-file="prod.tfvars"
-```
+## 🤝 Contributions
 
-Backend
+I'm currently working on this project solo, and I’d love to collaborate—especially on the frontend.  
+The frontend is still in its early stages, so we can decide together whether to stick with **Vue** or switch to **React**.
 
-- Artifact Registry: This will store your Docker image, making it accessible for Cloud Run deployment.
-- Cloud Run: This service will host your Dockerized Python backend.
-- Cloud Build Permissions: Enable Cloud Build to deploy images from Artifact Registry to Cloud Run.
+Feel free to open an issue or submit a pull request if you're interested!
+
+---
