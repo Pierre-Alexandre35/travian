@@ -2,6 +2,8 @@
 
 **Vallorium** is a persistent, browser-based multiplayer strategy game inspired by [Travian](https://www.travian.com/).
 
+![Vallorium Gameplay](docs/img/vallorium_gameplay.png)
+
 ## Technologies
 
 - **Backend**: FastAPI (based on the [Buutu FastAPI-React cookiecutter template](https://github.com/Buuntu/fastapi-react))
