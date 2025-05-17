@@ -2,7 +2,9 @@
 
 **Vallorium** is a persistent, browser-based multiplayer strategy game inspired by [Travian](https://www.travian.com/).
 
-<img src="docs/img/vallorium_gameplay.png" alt="Vallorium Gameplay" width="50%" />
+<p align="center">
+  <img src="docs/img/vallorium_gameplay.png" alt="Vallorium Gameplay" width="60%" />
+</p>
 
 ## Technologies
 
