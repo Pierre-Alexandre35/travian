@@ -26,3 +26,7 @@ The project is hosted on **Google Cloud Platform**:
 - The frontend (Vue 3 app) is served from a **GCS bucket** (static hosting).
 - The backend (FastAPI API) runs on **Cloud Run** or **Compute Engine**.
 - The PostgreSQL database is also hosted on **Compute Engine**.
+
+## Contributions
+
+I am currently working on this project alone and if someone is interested to work with me (especially on the frontend), I haven't really started the front-end right now so we can either choose React or Vue.
