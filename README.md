@@ -1,10 +1,12 @@
 # Vallorium (Inspired by Travian)
 
-**Vallorium** is a persistent, browser-based multiplayer strategy game inspired by [Travian](https://www.travian.com/). Each user has to select a tribe (roman, gauls or tetons) and start with one village. A village has 16 crops of 4 kinds (corn, iorn, wood and cray), each farm can be upgrade for a cost and will produce higher once upgraded. A village also has a center where the user can build, upgrade or even destroy buildings. One major aspect of this game is to have new village, you can either attack and conquer other villages players or found a village on a empty crop. For the first option, it will be adviced to raised an army and each tribe has different kind of troops.
+**Vallorium** is a persistent, browser-based multiplayer strategy game inspired by [Travian](https://www.travian.com/).
 
 <p align="center">
   <img src="docs/img/vallorium_gameplay_2.png" alt="Vallorium Gameplay" width="60%" />
 </p>
+
+Each user has to select a tribe (roman, gauls or tetons) and start with one village. A village has 16 crops of 4 kinds (corn, iorn, wood and cray), each farm can be upgrade for a cost and will produce higher once upgraded. A village also has a center where the user can build, upgrade or even destroy buildings. One major aspect of this game is to have new village, you can either attack and conquer other villages players or found a village on a empty crop. For the first option, it will be adviced to raised an army and each tribe has different kind of troops.
 
 ## Technologies
 
