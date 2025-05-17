@@ -8,17 +8,16 @@
   </a>
 </p>
 
+### 🌐 [Play Now at vallorium.com »](https://vallorium.com/)
+
 Each player selects a tribe (Romans, Gauls, or Teutons) and starts with a single village.  
-A village includes 16 resource fields of four types: **corn, iron, wood**, and **clay**. These fields can be upgraded at a cost to increase their production.  
-The village center allows players to build, upgrade, or demolish structures as their economy and strategy evolve.
+A village includes 16 resource fields of four types: **corn, iron, wood**, and **clay**. These fields can be upgraded at a cost to increase their production. The village center allows players to build, upgrade, or demolish structures as their economy and strategy evolve.
 
 A major part of the game is expansion:  
 You can either **conquer** other players’ villages or **found** new ones on unclaimed land.  
 To conquer, you'll need to raise an army—each tribe has its own unique units and strengths.
 
 ---
-
-### 🌐 [Play Now at Vallorium.com »](https://vallorium.com/)
 
 ---
 
