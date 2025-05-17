@@ -8,13 +8,12 @@
 
 ## Technologies
 
-- **Backend**: FastAPI (based on the [Buutu FastAPI-React cookiecutter template](https://github.com/Buuntu/fastapi-react))
+- **Backend**: FastAPI
 - **Frontend**: Vue 3
 - **Database**: PostgreSQL (with plans to adopt PostGIS for geospatial support)
 - **Infrastructure as Code**: Terraform
 
-The backend follows a modular FastAPI architecture, thanks to the Buutu template.  
-Since many of the game mechanics are map- and distance-based (e.g., villages and fields), I may migrate to **PostGIS** in a future version to better support geospatial queries.
+The backend follows a modular FastAPI architecture (based on the [Buutu FastAPI-React cookiecutter template](https://github.com/Buuntu/fastapi-react)) . Since many of the game mechanics are map and distance-based (e.g., villages and fields), I may migrate to **PostGIS** in a future version to better support geospatial queries.
 
 Although I don't have frontend expertise, I chose **Vue 3** for its approachability, even if the community is smaller compared to React.
 
