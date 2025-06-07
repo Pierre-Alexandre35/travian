@@ -9,8 +9,32 @@ from app.db.models import (
     ResourcesTypes,
     Production,
 )
+from app.core.security import get_password_hash
+from app.db.models import User
 
 fake = Faker()
+
+
+def seed_admin(db):
+    existing_admin = db.query(User).filter(User.is_superuser == True).first()
+    if existing_admin:
+        print("Admin user already exists")
+        return
+
+    admin = User(
+        email="admin@example.com",
+        first_name="Admin",
+        last_name="Root",
+        hashed_password=get_password_hash(
+            "admin123"
+        ),  # ✅ Replace with secure pass in prod
+        is_active=True,
+        is_superuser=True,
+        tribe_id=1,  # assume tribe_id 1 (Romans) exists
+    )
+    db.add(admin)
+    db.commit()
+    print("Admin user created: admin@example.com / admin123")
 
 
 def seed_tribes(db):
@@ -93,19 +117,18 @@ def insert_fake_data(db):
                 x=fake.random_int(min=-500, max=500),
                 y=fake.random_int(min=-500, max=500),
                 population=fake.random_int(min=50, max=500),
-                owner_id=user.id,
             ),
+            owner_id=user.id,
         )
 
 
 def init() -> None:
     db = SessionLocal()
-    seed_production(db)
     seed_tribes(db)
     seed_resources(db)
-
+    seed_production(db)
+    seed_admin(db)
     insert_fake_data(db)
-
     db.close()
 
 

@@ -40,6 +40,34 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
+def get_villages_by_owner_id(
+    db: Session, owner_id: int
+) -> t.List[models.Village]:
+    return (
+        db.query(models.Village)
+        .filter(models.Village.owner_id == owner_id)
+        .all()
+    )
+
+
+def get_village_by_id_and_owner(
+    db: Session, village_id: int, owner_id: int
+) -> models.Village:
+    village = (
+        db.query(models.Village)
+        .filter(
+            models.Village.id == village_id, models.Village.owner_id == owner_id
+        )
+        .first()
+    )
+    if not village:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="Village not found or unauthorized",
+        )
+    return village
+
+
 def create_user_village(
     db: Session, village: schemas.VillageCreate, owner_id: int
 ):

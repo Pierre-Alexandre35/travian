@@ -1,8 +1,8 @@
-"""update village farms transaction table
+"""init schema
 
-Revision ID: 270436073b31
-Revises: ea5365bf9934
-Create Date: 2025-03-02 06:55:48.437522-08:00
+Revision ID: d50f642788c5
+Revises: b6212c678ef2
+Create Date: 2025-06-07 11:36:00.191576-07:00
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '270436073b31'
-down_revision = 'ea5365bf9934'
+revision = 'd50f642788c5'
+down_revision = 'b6212c678ef2'
 branch_labels = None
 depends_on = None
 
