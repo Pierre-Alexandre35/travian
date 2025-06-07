@@ -19,13 +19,10 @@ async def village_create(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Create a new village
+    Create a new village. The owner is automatically set from the authenticated user.
     """
-    # Ensure the authenticated user is the owner
-    village.owner_id = current_user.id
-
     try:
-        new_village = create_user_village(db, village)
+        new_village = create_user_village(db, village, owner_id=current_user.id)
         return new_village
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

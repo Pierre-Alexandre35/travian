@@ -40,13 +40,15 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def create_user_village(db: Session, village: schemas.VillageCreate):
+def create_user_village(
+    db: Session, village: schemas.VillageCreate, owner_id: int
+):
     db_village = models.Village(
         name=village.name,
         x=village.x,
         y=village.y,
         population=village.population,
-        owner_id=village.owner_id,
+        owner_id=owner_id,
     )
     db.add(db_village)
     db.commit()
