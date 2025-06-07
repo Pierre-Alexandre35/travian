@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import TribeAttributes
 from app.db.schemas import TribeOut, TribeBase
+from app.core.auth import get_current_active_superuser
 
 tribes_router = APIRouter()
 
@@ -16,10 +17,14 @@ async def list_tribes(db=Depends(get_db)):
     return db.query(TribeAttributes).all()
 
 
-@tribes_router.post("/tribes", response_model=TribeOut)
+@tribes_router.post(
+    "/tribes",
+    response_model=TribeOut,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 async def create_tribe(tribe: TribeBase, db=Depends(get_db)):
     """
-    Create a new tribe
+    Admin-only: Create a new tribe
     """
     db_tribe = TribeAttributes(name=tribe.name)
     db.add(db_tribe)

@@ -18,6 +18,8 @@ Base = declarative_base()
 # ------------------------------
 # 1️⃣ Tribe Enumeration
 # ------------------------------
+
+
 class Tribe(str, Enum):
     ROMANS = "Romans"
     TEUTONS = "Teutons"

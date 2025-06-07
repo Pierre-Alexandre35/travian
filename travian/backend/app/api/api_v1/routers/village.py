@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.db.session import get_db
-from app.db.crud import create_user_village
+from app.db.crud import (
+    create_user_village,
+    get_villages_by_owner_id,
+    get_village_by_id_and_owner,
+)
 from app.db.schemas import VillageCreate, VillageOut
 from app.core.auth import get_current_active_user
 from app.db.models import User
@@ -19,13 +24,42 @@ async def village_create(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Create a new village
+    Create a new village. The owner is automatically set from the authenticated user.
     """
-    # Ensure the authenticated user is the owner
-    village.owner_id = current_user.id
-
     try:
-        new_village = create_user_village(db, village)
+        new_village = create_user_village(db, village, owner_id=current_user.id)
         return new_village
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@village_router.get(
+    "/villages/",
+    response_model=List[VillageOut],
+    response_model_exclude_none=True,
+)
+async def list_user_villages(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    List all villages owned by the currently authenticated user.
+    """
+    villages = get_villages_by_owner_id(db=db, owner_id=current_user.id)
+    return villages
+
+
+@village_router.get(
+    "/villages/{village_id}",
+    response_model=VillageOut,
+    response_model_exclude_none=True,
+)
+async def get_my_village(
+    village_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Get a single village owned by the current authenticated user.
+    """
+    return get_village_by_id_and_owner(db, village_id, current_user.id)

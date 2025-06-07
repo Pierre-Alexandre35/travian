@@ -27,7 +27,6 @@ class VillageBase(BaseModel):
     x: int
     y: int
     population: int
-    owner_id: int = None
 
 
 class VillageCreate(VillageBase):
@@ -42,7 +41,11 @@ class UserOut(UserBase):
 
 
 class VillageOut(VillageBase):
-    pass
+    id: int
+    owner_id: int
+
+    class Config:
+        orm_mode = True
 
 
 class UserCreate(UserBase):

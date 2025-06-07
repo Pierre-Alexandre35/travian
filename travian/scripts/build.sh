@@ -1,16 +1,21 @@
 #!/bin/bash
-
-# Exit in case of error
 set -e
 
-# Build and run containers
+echo "🔧 Starting containers..."
 docker-compose up -d
 
-# Hack to wait for postgres container to be up before running alembic migrations
-sleep 5;
+echo "⏳ Waiting for Postgres..."
+until docker exec travian-postgres-1 pg_isready -U pierre > /dev/null 2>&1; do
+  sleep 1
+done
 
-# Run migrations
+echo "📦 Generating Alembic migration..."
+docker-compose run --rm backend alembic revision --autogenerate -m "init schema"
+
+echo "🚀 Applying Alembic migrations..."
 docker-compose run --rm backend alembic upgrade head
 
-# Create initial data
+echo "🌱 Seeding initial data..."
 docker-compose run --rm backend python3 app/initial_data.py
+
+echo "✅ Done."
