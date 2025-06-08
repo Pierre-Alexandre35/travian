@@ -59,6 +59,7 @@ class TribeAttributes(Base):
     name: Mapped[Tribe] = mapped_column(
         SAEnum(Tribe), unique=True, nullable=False
     )
+    bonus: Mapped[Optional[str]] = mapped_column(String, nullable=True)
 
 
 # ------------------------------
@@ -95,19 +96,19 @@ class Village(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    x: Mapped[int] = mapped_column(Integer, nullable=False)
-    y: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    map_tile_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("map_tile.id"), unique=True, nullable=False
+    )
+
     owner_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("user.id"), nullable=True
     )
     population: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    tile = relationship("MapTile", back_populates="village")
     owner = relationship("User", back_populates="villages")
     farms = relationship("VillageFarmPlot", back_populates="village")
-
-    __table_args__ = (
-        UniqueConstraint("x", "y", name="uq_village_coordinates"),
-    )
 
 
 # ------------------------------
@@ -161,3 +162,17 @@ class VillageFarmPlot(Base):
             name="uq_village_farm",
         ),
     )
+
+
+class MapTile(Base):
+    __tablename__ = "map_tile"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    x: Mapped[int] = mapped_column(Integer, nullable=False)
+    y: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_constructible: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    __table_args__ = (UniqueConstraint("x", "y", name="uq_tile_coordinates"),)
+
+    # Optional: backref to village
+    village = relationship("Village", back_populates="tile", uselist=False)

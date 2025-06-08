@@ -24,8 +24,7 @@ class UserBase(BaseModel):
 
 class VillageBase(BaseModel):
     name: str
-    x: int
-    y: int
+    map_tile_id: int
     population: int
 
 
@@ -33,16 +32,28 @@ class VillageCreate(VillageBase):
     pass
 
 
-class UserOut(UserBase):
-    tribe: TribeOut
+class MapTileOut(BaseModel):
+    id: int
+    x: int
+    y: int
+    is_constructible: bool
 
     class Config:
         orm_mode = True
 
 
-class VillageOut(VillageBase):
+class VillageOut(BaseModel):
     id: int
-    owner_id: int
+    name: str
+    population: int
+    tile: MapTileOut
+
+    class Config:
+        orm_mode = True
+
+
+class UserOut(UserBase):
+    tribe: TribeOut
 
     class Config:
         orm_mode = True
