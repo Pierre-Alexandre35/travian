@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -24,13 +24,9 @@ async def village_create(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Create a new village. The owner is automatically set from the authenticated user.
+    Create a new village for the current user.
     """
-    try:
-        new_village = create_user_village(db, village, owner_id=current_user.id)
-        return new_village
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return create_user_village(db, village, owner_id=current_user.id)
 
 
 @village_router.get(
@@ -43,10 +39,9 @@ async def list_user_villages(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    List all villages owned by the currently authenticated user.
+    List all villages owned by the current authenticated user.
     """
-    villages = get_villages_by_owner_id(db=db, owner_id=current_user.id)
-    return villages
+    return get_villages_by_owner_id(db=db, owner_id=current_user.id)
 
 
 @village_router.get(
@@ -60,6 +55,6 @@ async def get_my_village(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Get a single village owned by the current authenticated user.
+    Get a specific village owned by the current authenticated user.
     """
     return get_village_by_id_and_owner(db, village_id, current_user.id)
