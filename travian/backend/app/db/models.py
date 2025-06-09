@@ -174,5 +174,28 @@ class MapTile(Base):
 
     __table_args__ = (UniqueConstraint("x", "y", name="uq_tile_coordinates"),)
 
-    # Optional: backref to village
     village = relationship("Village", back_populates="tile", uselist=False)
+
+
+class MapTileResourceLayout(Base):
+    __tablename__ = "map_tile_resource_layout"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    map_tile_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("map_tile.id", ondelete="CASCADE"), nullable=False
+    )
+    resource_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("resources_types.id"), nullable=False
+    )
+    amount: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "map_tile_id", "resource_type_id", name="uq_tile_resource"
+        ),
+    )
+
+    map_tile = relationship("MapTile", backref="resource_layouts")
+    resource_type = relationship("ResourcesTypes")

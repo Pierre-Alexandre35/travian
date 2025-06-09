@@ -109,9 +109,9 @@ def get_village_by_id_and_owner(
 def create_user_village(
     db: Session, village: schemas.VillageCreate, owner_id: int
 ) -> models.Village:
-    from app.db.models import VillageFarmPlot, ResourcesTypes, Resource
+    from app.db.models import VillageFarmPlot, MapTileResourceLayout
 
-    # Check if tile is already taken
+    # Check if the tile is already occupied
     if (
         db.query(models.Village)
         .filter(models.Village.map_tile_id == village.map_tile_id)
@@ -122,7 +122,21 @@ def create_user_village(
             detail=f"Map tile {village.map_tile_id} is already occupied.",
         )
 
+    # Retrieve the tile's resource layout
+    resource_layouts = (
+        db.query(MapTileResourceLayout)
+        .filter(MapTileResourceLayout.map_tile_id == village.map_tile_id)
+        .all()
+    )
+
+    if not resource_layouts:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"No resource layout found for map tile {village.map_tile_id}.",
+        )
+
     try:
+        # Create the village
         db_village = models.Village(
             name=village.name,
             map_tile_id=village.map_tile_id,
@@ -130,25 +144,17 @@ def create_user_village(
             owner_id=owner_id,
         )
         db.add(db_village)
-        db.flush()
+        db.flush()  # Ensure village.id is available
 
-        resource_map = {r.name: r.id for r in db.query(ResourcesTypes).all()}
-
-        farm_plan = [
-            (Resource.WOOD, 2),
-            (Resource.CLAY, 2),
-            (Resource.IRON, 2),
-            (Resource.CROP, 3),
-        ]
-
+        # Generate farm plots based on the tile's resource layout
         farms = []
         farm_number = 1
-        for resource, count in farm_plan:
-            for _ in range(count):
+        for layout in resource_layouts:
+            for _ in range(layout.amount):
                 farms.append(
                     VillageFarmPlot(
                         village_id=db_village.id,
-                        resource_type_id=resource_map[resource],
+                        resource_type_id=layout.resource_type_id,
                         farm_number=farm_number,
                         level=0,
                     )
@@ -159,6 +165,7 @@ def create_user_village(
         db.commit()
         db.refresh(db_village)
 
+        # Load with joined tile info
         return (
             db.query(models.Village)
             .options(joinedload(models.Village.tile))
