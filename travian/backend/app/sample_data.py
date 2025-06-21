@@ -8,7 +8,7 @@ from app.core.security import get_password_hash
 fake = Faker()
 
 
-def insert_fake_users_and_villages(db, count: int = 100):
+def insert_fake_users_and_villages(db, count: int = 3):
     tribe = db.query(TribeAttributes).filter_by(name=Tribe.ROMANS.value).first()
     if not tribe:
         raise ValueError("Romans tribe not found!")
@@ -52,6 +52,6 @@ def insert_fake_users_and_villages(db, count: int = 100):
 if __name__ == "__main__":
     db = SessionLocal()
     try:
-        insert_fake_users_and_villages(db, count=100)
+        insert_fake_users_and_villages(db, count=3)
     finally:
         db.close()

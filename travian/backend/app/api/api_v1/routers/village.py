@@ -7,6 +7,7 @@ from app.db.crud import (
     create_user_village,
     get_villages_by_owner_id,
     get_village_by_id_and_owner,
+    get_village_by_name_and_owner,
 )
 from app.db.schemas import VillageCreate, VillageOut
 from app.core.auth import get_current_active_user
@@ -58,3 +59,19 @@ async def get_my_village(
     Get a specific village owned by the current authenticated user.
     """
     return get_village_by_id_and_owner(db, village_id, current_user.id)
+
+
+@village_router.get(
+    "/villages/name/{village_name}",
+    response_model=VillageOut,
+    response_model_exclude_none=True,
+)
+async def get_village_by_name(
+    village_name: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Get a specific village by its unique name, owned by the current user.
+    """
+    return get_village_by_name_and_owner(db, village_name, current_user.id)

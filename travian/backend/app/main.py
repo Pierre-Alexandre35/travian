@@ -6,6 +6,8 @@ from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.village import village_router
 from app.api.api_v1.routers.tribes import tribes_router
+from app.api.api_v1.routers.ressources import ressources_router
+
 from app.core import config
 from app.db.session import SessionLocal
 from app.core.auth import get_current_active_user
@@ -52,6 +54,8 @@ app.include_router(village_router, prefix="/api", tags=["village"])
 
 app.include_router(tribes_router, prefix="/api", tags=["tribes"])
 
+
+app.include_router(ressources_router, prefix="/api", tags=["ressources"])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)

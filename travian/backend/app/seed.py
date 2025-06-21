@@ -161,6 +161,7 @@ def seed_map_tiles(session, size=100, constructible_ratio=0.9):
 
 def main():
     session = SessionLocal()
+    print("🔍 DB URL from session:", session.get_bind().engine.url)
     try:
         seed_tribes(session)
         seed_resources(session)

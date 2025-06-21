@@ -106,6 +106,26 @@ def get_village_by_id_and_owner(
     return village
 
 
+def get_village_by_name_and_owner(
+    db: Session, village_name: str, owner_id: int
+) -> models.Village:
+    village = (
+        db.query(models.Village)
+        .options(joinedload(models.Village.tile))
+        .filter(
+            models.Village.name == village_name,
+            models.Village.owner_id == owner_id,
+        )
+        .first()
+    )
+    if not village:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="Village not found or unauthorized",
+        )
+    return village
+
+
 def create_user_village(
     db: Session, village: schemas.VillageCreate, owner_id: int
 ) -> models.Village:
