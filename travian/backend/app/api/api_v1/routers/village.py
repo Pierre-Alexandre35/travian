@@ -8,8 +8,14 @@ from app.db.crud import (
     get_villages_by_owner_id,
     get_village_by_id_and_owner,
     get_village_by_name_and_owner,
+    get_village_production,
 )
-from app.db.schemas import VillageCreate, VillageOut
+from app.db.schemas import (
+    VillageCreate,
+    VillageOut,
+    VillageProductionOut,
+    ResourceProduction,
+)
 from app.core.auth import get_current_active_user
 from app.db.models import User
 
@@ -75,3 +81,30 @@ async def get_village_by_name(
     Get a specific village by its unique name, owned by the current user.
     """
     return get_village_by_name_and_owner(db, village_name, current_user.id)
+
+
+@village_router.get(
+    "/villages/{village_id}/production",
+    response_model=VillageProductionOut,
+    response_model_exclude_none=True,
+)
+async def get_village_resource_production(
+    village_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    # Get village for name & auth check
+    village = get_village_by_id_and_owner(db, village_id, current_user.id)
+
+    # Get raw production totals per resource type
+    raw_production = get_village_production(db, village_id, current_user.id)
+
+    # Construct validated response
+    return VillageProductionOut(
+        village_id=village.id,
+        village_name=village.name,
+        production=[
+            ResourceProduction(resource_type=res, total=int(total or 0))
+            for res, total in raw_production
+        ],
+    )

@@ -44,8 +44,8 @@ def seed_production(session):
         raise ValueError("Resources must be seeded before production.")
 
     for res in resources:
-        for level in range(1, 6):  # levels 1 to 5
-            production_value = 10 * level
+        for level in range(0, 6):  # levels 1 to 5
+            production_value = 10 * (level + 3)
             prod = Production(
                 resource_type_id=res.id,
                 level=level,

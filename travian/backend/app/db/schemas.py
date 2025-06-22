@@ -104,3 +104,14 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: str = None
     permissions: str = "user"
+
+
+class ResourceProduction(BaseModel):
+    resource_type: str
+    total: int
+
+
+class VillageProductionOut(BaseModel):
+    village_id: int
+    village_name: str
+    production: t.List[ResourceProduction]

@@ -5,6 +5,7 @@ import typing as t
 
 from . import models, schemas
 from app.core.security import get_password_hash
+from sqlalchemy import func, and_
 
 
 # =======================
@@ -199,3 +200,27 @@ def create_user_village(
             status.HTTP_409_CONFLICT,
             detail="Integrity error: map tile already taken or bad foreign key.",
         )
+
+
+def get_village_production(db: Session, village_id: int, owner_id: int):
+    return (
+        db.query(
+            models.ResourcesTypes.name,
+            func.sum(models.Production.production_value),
+        )
+        .join(
+            models.VillageFarmPlot,
+            models.VillageFarmPlot.resource_type_id == models.ResourcesTypes.id,
+        )
+        .join(
+            models.Production,
+            and_(
+                models.Production.resource_type_id
+                == models.VillageFarmPlot.resource_type_id,
+                models.Production.level == models.VillageFarmPlot.level,
+            ),
+        )
+        .filter(models.VillageFarmPlot.village_id == village_id)
+        .group_by(models.ResourcesTypes.name)
+        .all()
+    )
