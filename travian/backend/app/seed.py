@@ -10,6 +10,8 @@ from app.db.models import (
     MapTile,
     MapTileResourceLayout,
     User,
+    GranaryCapacity,
+    WarehouseCapacity,
 )
 from app.core.security import get_password_hash
 
@@ -159,6 +161,53 @@ def seed_map_tiles(session, size=100, constructible_ratio=0.9):
     )
 
 
+def seed_warehouse_and_granary_capacity(session):
+    levels = range(0, 11)
+
+    granary_capacity_values = {
+        0: 400,
+        1: 1700,
+        2: 3400,
+        3: 5100,
+        4: 6800,
+        5: 8500,
+        6: 10200,
+        7: 11900,
+        8: 13600,
+        9: 15300,
+        10: 17000,
+    }
+
+    warehouse_capacity_values = {
+        0: 500,
+        1: 800,
+        2: 1550,
+        3: 2350,
+        4: 3200,
+        5: 4100,
+        6: 5050,
+        7: 6050,
+        8: 7100,
+        9: 8200,
+        10: 9350,
+    }
+
+    for level in levels:
+        session.add(
+            GranaryCapacity(
+                level=level, capacity=granary_capacity_values[level]
+            )
+        )
+        session.add(
+            WarehouseCapacity(
+                level=level, capacity=warehouse_capacity_values[level]
+            )
+        )
+
+    session.flush()
+    print("✅ Granary and Warehouse capacities seeded")
+
+
 def main():
     session = SessionLocal()
     print("🔍 DB URL from session:", session.get_bind().engine.url)
@@ -168,6 +217,7 @@ def main():
         seed_production(session)
         seed_admin_user(session)
         seed_map_tiles(session)
+        seed_warehouse_and_granary_capacity(session)
         session.commit()
         print("🌱 Seeding completed")
     except Exception as e:

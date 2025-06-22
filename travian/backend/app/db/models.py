@@ -199,3 +199,27 @@ class MapTileResourceLayout(Base):
 
     map_tile = relationship("MapTile", backref="resource_layouts")
     resource_type = relationship("ResourcesTypes")
+
+
+class GranaryCapacity(Base):
+    __tablename__ = "granary_capacity"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    level: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+    capacity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint("level", name="uq_granary_level"),)
+
+
+class WarehouseCapacity(Base):
+    __tablename__ = "warehouse_capacity"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    level: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+    capacity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint("level", name="uq_warehouse_level"),)
