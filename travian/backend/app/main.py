@@ -40,7 +40,6 @@ async def example_task():
     return {"message": "success"}
 
 
-# Routers
 app.include_router(
     users_router,
     prefix="/api/v1",

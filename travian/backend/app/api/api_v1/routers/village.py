@@ -19,6 +19,10 @@ from app.db.schemas import (
 from app.core.auth import get_current_active_user
 from app.db.models import User
 
+from app.db.crud import get_village_current_resources
+from app.db.schemas import VillageResourceOut, ResourceBalance
+
+
 village_router = APIRouter()
 
 
@@ -106,5 +110,28 @@ async def get_village_resource_production(
         production=[
             ResourceProduction(resource_type=res, total=int(total or 0))
             for res, total in raw_production
+        ],
+    )
+
+
+@village_router.get(
+    "/villages/{village_id}/resources",
+    response_model=VillageResourceOut,
+    response_model_exclude_none=True,
+)
+async def get_village_resource_balance(
+    village_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    village = get_village_by_id_and_owner(db, village_id, current_user.id)
+    balances = get_village_current_resources(db, village_id, current_user.id)
+
+    return VillageResourceOut(
+        village_id=village.id,
+        village_name=village.name,
+        resources=[
+            ResourceBalance(resource_type=res, amount=amt)
+            for res, amt in balances
         ],
     )

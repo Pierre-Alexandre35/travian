@@ -115,3 +115,14 @@ class VillageProductionOut(BaseModel):
     village_id: int
     village_name: str
     production: t.List[ResourceProduction]
+
+
+class ResourceBalance(BaseModel):
+    resource_type: str
+    amount: int
+
+
+class VillageResourceOut(BaseModel):
+    village_id: int
+    village_name: str
+    resources: t.List[ResourceBalance]

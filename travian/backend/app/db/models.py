@@ -11,6 +11,7 @@ from enum import Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Optional
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -223,3 +224,31 @@ class WarehouseCapacity(Base):
     capacity: Mapped[int] = mapped_column(Integer, nullable=False)
 
     __table_args__ = (UniqueConstraint("level", name="uq_warehouse_level"),)
+
+
+class VillageResourceStorage(Base):
+    __tablename__ = "village_resource_storage"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    village_id: Mapped[int] = mapped_column(
+        ForeignKey("village.id"), nullable=False
+    )
+    resource_type_id: Mapped[int] = mapped_column(
+        ForeignKey("resources_types.id"), nullable=False
+    )
+
+    stored_amount: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+    last_updated: Mapped[datetime] = mapped_column(nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "village_id", "resource_type_id", name="uq_village_resource"
+        ),
+    )
+
+    village = relationship("Village", backref="resource_storage")
+    resource_type = relationship("ResourcesTypes")
