@@ -13,3 +13,5 @@ from app.db.schemas import UserCreate, UserEdit, User, UserOut
 from app.core.auth import get_current_active_user, get_current_active_superuser
 
 ressources_router = r = APIRouter()
+
+
