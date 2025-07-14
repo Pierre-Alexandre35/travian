@@ -48,6 +48,8 @@ services:
       dockerfile: Dockerfile
     command: python app/main.py
     tty: true
+    ports:
+      - "8080:8080"
     volumes:
       - ./backend:/app/:cached
       - ./.docker/.ipython:/root/.ipython:cached

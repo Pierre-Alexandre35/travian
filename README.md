@@ -19,7 +19,64 @@ To conquer, you'll need to raise an army—each tribe has its own unique units a
 
 ---
 
+## 🗄️ Running
+
+Please note this will only run the back-end that is still in development.
+
+⚠️ **Docker** is required to launch the server. Build and start the application using:
+
+```
+cd travian
+./scripts/build.sh
+```
+
+This script will:
+
+- **Create and populate master tables**  
+  Static tables that never change (e.g., lookup/reference data).
+
+- **Create transaction tables**  
+  Dynamic tables such as users or villages.
+
+- **Insert dummy data**  
+  Seed the transaction tables with sample records.
+
 ---
+
+Default API Credentials
+
+- **Email:** `admin@example.com`
+- **Password:** `admin123`
+
+---
+
+API Documentation
+
+You can explore and test the API via Swagger UI:
+
+http://localhost:8000/api/docs#/
+
+---
+
+Default PSQL Credentials (locally)
+
+- **Host:** `localhost`
+- **Post:** `5432`
+- **Username:** `pierre`
+- **Password:** `password`
+- **Database:** `pierre`
+
+---
+
+Add, modify or remove a model (PSQL tables)
+
+We are using Alembic, a lightweight tool for database migration, so all changes in our PSQL tables must be done via Alembic and never direct `ALTER TABLE` on PSQL.
+
+1. Update, Add or Modify your table on the `backend/app/db/models.py`
+2. Create Alembic migration using `docker-compose run --rm backend alembic revision --autogenerate -m "Add XXXX model"`
+3. Once the migration file is created, apply it: `docker-compose run --rm backend alembic upgrade head`
+
+You should see on your terminal and on the migrations folder a new version.
 
 ## 🛠️ Technologies
 
@@ -55,3 +112,21 @@ The frontend is still in its early stages, so we can decide together whether to 
 Feel free to open an issue or submit a pull request if you're interested!
 
 ---
+
+backend
+GET: query parameters
+POST: request body
+
+## 🛠️ Bugs / Design Questions
+
+- Not every tiles have a layout and they should (curl -X 'POST' \
+  'http://localhost:8000/api/villages' )
+
+```
+404:
+{
+  "detail": "No resource layout found for map tile 7."
+}
+```
+
+- Recalculate user ressources using a middleware?

@@ -5,11 +5,82 @@ import typing as t
 
 from . import models, schemas
 from app.core.security import get_password_hash
+from sqlalchemy import func, and_
 
 
 # =======================
 # User CRUD
 # =======================
+
+from datetime import datetime
+
+
+def update_village_resources(db: Session, village_id: int):
+    now = datetime.utcnow()
+
+    # Get all stored resources for the village
+    storages = (
+        db.query(models.VillageResourceStorage)
+        .filter(models.VillageResourceStorage.village_id == village_id)
+        .all()
+    )
+
+    for storage in storages:
+        # Get total production per hour for this resource type
+        prod = (
+            db.query(models.Production)
+            .join(
+                models.VillageFarmPlot,
+                models.VillageFarmPlot.resource_type_id
+                == models.Production.resource_type_id,
+            )
+            .filter(
+                models.VillageFarmPlot.village_id == village_id,
+                models.Production.resource_type_id == storage.resource_type_id,
+                models.Production.level == models.VillageFarmPlot.level,
+            )
+            .with_entities(
+                func.sum(models.Production.production_value)
+            )  # FIXED ✅
+            .scalar()
+            or 0
+        )
+
+        # Calculate new amount based on elapsed time
+        seconds_elapsed = (now - storage.last_updated).total_seconds()
+        gain = int((prod / 3600) * seconds_elapsed)
+        storage.stored_amount += gain
+        storage.last_updated = now
+
+    db.commit()
+
+
+def get_village_current_resources(
+    db: Session, village_id: int, owner_id: int
+) -> t.List[t.Tuple[str, int]]:
+    # Ensure village belongs to the current user
+    village = (
+        db.query(models.Village)
+        .filter(
+            models.Village.id == village_id, models.Village.owner_id == owner_id
+        )
+        .first()
+    )
+    if not village:
+        raise HTTPException(status_code=404, detail="Village not found")
+
+    # Update the stored resources based on time and production
+    update_village_resources(db, village_id)
+
+    # Return fresh balances
+    storages = (
+        db.query(models.VillageResourceStorage)
+        .join(models.ResourcesTypes)
+        .filter(models.VillageResourceStorage.village_id == village_id)
+        .all()
+    )
+
+    return [(s.resource_type.name, s.stored_amount) for s in storages]
 
 
 def get_user(db: Session, user_id: int) -> models.User:
@@ -106,12 +177,52 @@ def get_village_by_id_and_owner(
     return village
 
 
+def get_village_by_name_and_owner(
+    db: Session, village_name: str, owner_id: int
+) -> models.Village:
+    village = (
+        db.query(models.Village)
+        .options(joinedload(models.Village.tile))
+        .filter(
+            models.Village.name == village_name,
+            models.Village.owner_id == owner_id,
+        )
+        .first()
+    )
+    if not village:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="Village not found or unauthorized",
+        )
+    return village
+
+
+from datetime import datetime
+from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
+from app.db import models, schemas
+from sqlalchemy.orm import Session
+
+
+from datetime import datetime
+from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
+from app.db import models, schemas
+from sqlalchemy.orm import Session
+
+
 def create_user_village(
     db: Session, village: schemas.VillageCreate, owner_id: int
 ) -> models.Village:
-    from app.db.models import VillageFarmPlot, ResourcesTypes, Resource
+    from app.db.models import (
+        VillageFarmPlot,
+        MapTileResourceLayout,
+        VillageResourceStorage,
+    )
 
-    # Check if tile is already taken
+    # 1. Check if the tile is already occupied
     if (
         db.query(models.Village)
         .filter(models.Village.map_tile_id == village.map_tile_id)
@@ -122,7 +233,21 @@ def create_user_village(
             detail=f"Map tile {village.map_tile_id} is already occupied.",
         )
 
+    # 2. Retrieve the tile's resource layout
+    resource_layouts = (
+        db.query(MapTileResourceLayout)
+        .filter(MapTileResourceLayout.map_tile_id == village.map_tile_id)
+        .all()
+    )
+
+    if not resource_layouts:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"No resource layout found for map tile {village.map_tile_id}.",
+        )
+
     try:
+        # 3. Create the village
         db_village = models.Village(
             name=village.name,
             map_tile_id=village.map_tile_id,
@@ -130,32 +255,44 @@ def create_user_village(
             owner_id=owner_id,
         )
         db.add(db_village)
-        db.flush()
+        db.flush()  # Ensure village.id is available
 
-        resource_map = {r.name: r.id for r in db.query(ResourcesTypes).all()}
-
-        farm_plan = [
-            (Resource.WOOD, 2),
-            (Resource.CLAY, 2),
-            (Resource.IRON, 2),
-            (Resource.CROP, 3),
-        ]
-
+        # 4. Create farm plots
         farms = []
         farm_number = 1
-        for resource, count in farm_plan:
-            for _ in range(count):
+        for layout in resource_layouts:
+            for _ in range(layout.amount):
                 farms.append(
                     VillageFarmPlot(
                         village_id=db_village.id,
-                        resource_type_id=resource_map[resource],
+                        resource_type_id=layout.resource_type_id,
                         farm_number=farm_number,
                         level=0,
                     )
                 )
                 farm_number += 1
-
         db.add_all(farms)
+
+        # 5. Add initial resources to VillageResourceStorage
+        # Hardcoded starter pack: Wood:50, Clay:75, Iron:90, Crop:40
+        starter_resources = {
+            1: 50,  # WOOD (assume id=1)
+            2: 75,  # CLAY (assume id=2)
+            3: 90,  # IRON (assume id=3)
+            4: 40,  # CROP (assume id=4)
+        }
+
+        initial_storage = [
+            VillageResourceStorage(
+                village_id=db_village.id,
+                resource_type_id=resource_type_id,
+                stored_amount=amount,
+                last_updated=datetime.utcnow(),
+            )
+            for resource_type_id, amount in starter_resources.items()
+        ]
+        db.add_all(initial_storage)
+
         db.commit()
         db.refresh(db_village)
 
@@ -172,3 +309,27 @@ def create_user_village(
             status.HTTP_409_CONFLICT,
             detail="Integrity error: map tile already taken or bad foreign key.",
         )
+
+
+def get_village_production(db: Session, village_id: int, owner_id: int):
+    return (
+        db.query(
+            models.ResourcesTypes.name,
+            func.sum(models.Production.production_value),
+        )
+        .join(
+            models.VillageFarmPlot,
+            models.VillageFarmPlot.resource_type_id == models.ResourcesTypes.id,
+        )
+        .join(
+            models.Production,
+            and_(
+                models.Production.resource_type_id
+                == models.VillageFarmPlot.resource_type_id,
+                models.Production.level == models.VillageFarmPlot.level,
+            ),
+        )
+        .filter(models.VillageFarmPlot.village_id == village_id)
+        .group_by(models.ResourcesTypes.name)
+        .all()
+    )

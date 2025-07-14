@@ -11,6 +11,7 @@ from enum import Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.ext.declarative import declarative_base
 from typing import Optional
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -174,5 +175,80 @@ class MapTile(Base):
 
     __table_args__ = (UniqueConstraint("x", "y", name="uq_tile_coordinates"),)
 
-    # Optional: backref to village
     village = relationship("Village", back_populates="tile", uselist=False)
+
+
+class MapTileResourceLayout(Base):
+    __tablename__ = "map_tile_resource_layout"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    map_tile_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("map_tile.id", ondelete="CASCADE"), nullable=False
+    )
+    resource_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("resources_types.id"), nullable=False
+    )
+    amount: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "map_tile_id", "resource_type_id", name="uq_tile_resource"
+        ),
+    )
+
+    map_tile = relationship("MapTile", backref="resource_layouts")
+    resource_type = relationship("ResourcesTypes")
+
+
+class GranaryCapacity(Base):
+    __tablename__ = "granary_capacity"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    level: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+    capacity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint("level", name="uq_granary_level"),)
+
+
+class WarehouseCapacity(Base):
+    __tablename__ = "warehouse_capacity"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    level: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+    capacity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint("level", name="uq_warehouse_level"),)
+
+
+class VillageResourceStorage(Base):
+    __tablename__ = "village_resource_storage"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True
+    )
+    village_id: Mapped[int] = mapped_column(
+        ForeignKey("village.id"), nullable=False
+    )
+    resource_type_id: Mapped[int] = mapped_column(
+        ForeignKey("resources_types.id"), nullable=False
+    )
+
+    stored_amount: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+    last_updated: Mapped[datetime] = mapped_column(nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "village_id", "resource_type_id", name="uq_village_resource"
+        ),
+    )
+
+    village = relationship("Village", backref="resource_storage")
+    resource_type = relationship("ResourcesTypes")

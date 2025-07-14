@@ -13,6 +13,21 @@ class TribeOut(TribeBase):
         orm_mode = True
 
 
+class ResourceTypeOut(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class TileResourceOut(BaseModel):
+    resource_type: ResourceTypeOut
+    amount: int
+
+    class Config:
+        orm_mode = True
+
+
 class UserBase(BaseModel):
     email: str
     is_active: bool = True
@@ -37,6 +52,7 @@ class MapTileOut(BaseModel):
     x: int
     y: int
     is_constructible: bool
+    resource_layouts: t.List[TileResourceOut] = []
 
     class Config:
         orm_mode = True
@@ -88,3 +104,25 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: str = None
     permissions: str = "user"
+
+
+class ResourceProduction(BaseModel):
+    resource_type: str
+    total: int
+
+
+class VillageProductionOut(BaseModel):
+    village_id: int
+    village_name: str
+    production: t.List[ResourceProduction]
+
+
+class ResourceBalance(BaseModel):
+    resource_type: str
+    amount: int
+
+
+class VillageResourceOut(BaseModel):
+    village_id: int
+    village_name: str
+    resources: t.List[ResourceBalance]
