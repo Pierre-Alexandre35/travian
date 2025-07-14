@@ -7,6 +7,8 @@ from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.village import village_router
 from app.api.api_v1.routers.tribes import tribes_router
 from app.api.api_v1.routers.ressources import ressources_router
+from app.api.api_v1.routers.health import health_router
+
 
 from app.core import config
 from app.db.session import SessionLocal
@@ -28,9 +30,9 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
-@app.get("/api/v1")
-async def root():
-    return {"message": "Hello World"}
+@app.get("/", tags=["health"])
+async def health_check():
+    return {"status": "ok"}
 
 
 @app.get("/api/v1/task")
@@ -46,8 +48,10 @@ app.include_router(
     tags=["users"],
     dependencies=[Depends(get_current_active_user)],
 )
-app.include_router(auth_router, prefix="/api", tags=["auth"])
 
+app.include_router(health_router, prefix="/api", tags=["health"])
+
+app.include_router(auth_router, prefix="/api", tags=["auth"])
 
 app.include_router(village_router, prefix="/api", tags=["village"])
 
@@ -57,4 +61,7 @@ app.include_router(tribes_router, prefix="/api", tags=["tribes"])
 app.include_router(ressources_router, prefix="/api", tags=["ressources"])
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
+    import os
+
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
