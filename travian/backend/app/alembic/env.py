@@ -1,22 +1,34 @@
 import os
 from logging.config import fileConfig
+
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+
+# make sure your models are on PYTHONPATH
 from app.db.models import Base
 
-# Alembic Config object
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
 config = context.config
 
-# Configure logging
+# ------------------------------------------------------------------------------
+# OVERRIDE the sqlalchemy.url in alembic.ini with the DATABASE_URL env var:
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("Environment variable DATABASE_URL is not set")
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
+# ------------------------------------------------------------------------------
+
+# Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
 
-# Target metadata
+# our MetaData object
 target_metadata = Base.metadata
 
-# List of system tables to ignore (PostGIS, Census, and Tiger tables)
+# list of system tables to ignore during autogenerate
 EXCLUDED_TABLES = {
-    "spatial_ref_sys",  # PostGIS spatial reference system table
-    "topology",  # PostGIS topology table
+    "spatial_ref_sys",
+    "topology",
     "layer",
     "geocode_settings",
     "edges",
@@ -27,8 +39,8 @@ EXCLUDED_TABLES = {
     "county_lookup",
     "state_lookup",
     "tract",
-    "zcta5",  # Census ZIP Code Tabulation Areas
-    "tabblock20",  # Census Tabulation Blocks
+    "zcta5",
+    "tabblock20",
     "loader_variables",
     "featnames",
     "zip_state_loc",
@@ -55,51 +67,43 @@ EXCLUDED_TABLES = {
 }
 
 
-def include_object(object, name, type_, reflected, compare_to):
-    """Exclude PostGIS and system tables from Alembic autogenerate."""
+def include_object(obj, name, type_, reflected, compare_to):
+    """Skip PostGIS / system tables in autogenerate."""
     if type_ == "table" and name in EXCLUDED_TABLES:
-        return False  # Do NOT include these tables in migrations
-    return True  # Process other tables normally
-
-
-def get_url():
-    """Fetch database URL from environment variables."""
-    return os.getenv("DATABASE_URL")
+        return False
+    return True
 
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""
-    url = get_url()
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         include_schemas=True,
         dialect_opts={"paramstyle": "named"},
-        include_object=include_object,  # Use the filter function
+        include_object=include_object,
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online():
     """Run migrations in 'online' mode."""
-    configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = get_url()
+    cfg = config.get_section(config.config_ini_section)
+    # url already set via set_main_option above
     connectable = engine_from_config(
-        configuration,
+        cfg,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            include_object=include_object,  # Use the filter function
+            include_object=include_object,
         )
-
         with context.begin_transaction():
             context.run_migrations()
 
