@@ -1,0 +1,31 @@
+steps:
+  # 1) Build & push to Artifact Registry (AMD64)
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "--platform=linux/amd64"
+      - "-t"
+      - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
+      - "./backend"
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
+  # 2) Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud run deploy ${SERVICE} \
+          --image=europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA \
+          --region=${REGION} \
+          --platform=managed \
+          --allow-unauthenticated \
+          --set-env-vars DATABASE_URL=${DATABASE_URL}
+substitutions:
+  _SERVICE: backend-service
+  _REGION: europe-west9
+  _DATABASE_URL: postgresql://pierre:password@34.163.113.47:5432/pierre?sslmode=require
+images:
+  - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
