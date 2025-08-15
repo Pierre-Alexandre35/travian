@@ -1,21 +1,36 @@
-/*
-variable "folder_id" {
-  description = "The ID of the organization where the folder will be created."
+variable "project" {
+  type    = string
+  default = "vallorium-core-prod"
+}
+
+variable "region" {
+  type    = string
+  default = "europe-west9"
+}
+
+variable "zone" {
+  type    = string
+  default = "europe-west9-b"
+}
+
+variable "api_name" {
+  type        = string
+  description = "Name for the API Cloud Run service"
+  default     = "vallorium-api"
+}
+
+variable "api_image" {
+  type        = string
+  description = "Container image for the API"
+  default     = "gcr.io/vallorium-001/backend:latest"
+}
+
+variable "github_owner" {
+  description = "GitHub organization or user where the repo lives"
   type        = string
 }
 
-variable "folder_name" {
-  description = "The name of the folder for organizing projects."
+variable "github_repo" {
+  description = "Name of the GitHub repository"
   type        = string
-  default     = "my-projects-folder"
 }
-*/
-variable "existing_project_id" {
-  description = "ID of the manually created Google Cloud project"
-  type        = string
-  default     = "travian-3919"  # Set this to your actual project ID
-}
-variable "region" {}
-variable "bucket_name" {}
-variable "service_account_id" {}
-variable "billing_account_id" {}

@@ -1,3 +1,5 @@
+# cloudbuild.yaml
+
 steps:
   # 1) Build & push to Artifact Registry (AMD64)
   - name: "gcr.io/cloud-builders/docker"
@@ -5,27 +7,33 @@ steps:
       - "build"
       - "--platform=linux/amd64"
       - "-t"
-      - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
-      - "./backend"
+      - "europe-west9-docker.pkg.dev/$PROJECT_ID/backend-repo/backend:$BUILD_ID"
+      - "<CODE_DIR>"
+
   - name: "gcr.io/cloud-builders/docker"
     args:
       - "push"
-      - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
+      - "europe-west9-docker.pkg.dev/$PROJECT_ID/backend-repo/backend:$BUILD_ID"
+
   # 2) Deploy to Cloud Run
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        gcloud run deploy ${SERVICE} \
-          --image=europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA \
-          --region=${REGION} \
+        gcloud run deploy ${_SERVICE} \
+          --image=europe-west9-docker.pkg.dev/$PROJECT_ID/backend-repo/backend:$BUILD_ID \
+          --region=${_REGION} \
           --platform=managed \
           --allow-unauthenticated \
-          --set-env-vars DATABASE_URL=${DATABASE_URL}
+          --set-env-vars="DATABASE_URL=${_DATABASE_URL}"
+
+# These get injected by Terraform’s Cloud Build trigger
 substitutions:
   _SERVICE: backend-service
   _REGION: europe-west9
-  _DATABASE_URL: postgresql://pierre:password@34.163.113.47:5432/pierre?sslmode=require
+  _DATABASE_URL: "postgresql://pierre:password@${DB_STATIC_IP}:5432/pierre?sslmode=require"
+
+# Declare the built image so Cloud Build records it
 images:
-  - "europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA"
+  - "europe-west9-docker.pkg.dev/$PROJECT_ID/backend-repo/backend:$BUILD_ID"
