@@ -14,7 +14,8 @@ class BuildingPrerequisiteOut(AppBaseModel):
 
 class BuildingLevelOut(AppBaseModel):
     level: int
-    time: int  # build time in seconds (or minutes depending on your logic)
+    time: int  # build time in seconds
+    population_required: int
     cost: List[ResourceCost]
     prerequisites: Optional[List[BuildingPrerequisiteOut]] = []
 
@@ -26,5 +27,19 @@ class BuildingTypeOut(AppBaseModel):
 
 
 class BuildingCatalogOut(AppBaseModel):
-    tribe: Optional[str] = None  # only if you want to expose it
+    tribe: Optional[str] = None
     buildings: List[BuildingTypeOut]
+
+
+class BuildingLevelAvailabilityOut(AppBaseModel):
+    building: str
+    level: int
+    can_build: bool
+    unmet: List[str]
+    cost: List[ResourceCost]
+    population_required: int
+    prerequisites: List[BuildingPrerequisiteOut]
+
+
+class BuildingAvailabilityListOut(AppBaseModel):
+    items: List[BuildingLevelAvailabilityOut]

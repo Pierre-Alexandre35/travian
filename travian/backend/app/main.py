@@ -8,6 +8,7 @@ from app.api.api_v1.routers.village import village_router
 from app.api.api_v1.routers.tribes import tribes_router
 from app.api.api_v1.routers.ressources import ressources_router
 from app.api.api_v1.routers.health import health_router
+from app.api.api_v1.routers.buildings import building_router
 
 
 from app.core import config
@@ -57,6 +58,7 @@ app.include_router(village_router, prefix="/api", tags=["village"])
 
 app.include_router(tribes_router, prefix="/api", tags=["tribes"])
 
+app.include_router(building_router, prefix="/api", tags=["buildings"])
 
 app.include_router(ressources_router, prefix="/api", tags=["ressources"])
 
