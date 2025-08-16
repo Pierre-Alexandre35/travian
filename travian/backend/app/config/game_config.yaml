@@ -1,0 +1,42 @@
+map_tile:
+  size: 100
+  constructible_ratio: 0.9
+  layouts:
+    - layout: [[CROP, 15], [WOOD, 1], [CLAY, 1], [IRON, 1]]
+      weight: 0.02
+    - layout: [[CROP, 9], [WOOD, 3], [CLAY, 3], [IRON, 3]]
+      weight: 0.05
+    - layout: [[CROP, 6], [WOOD, 4], [CLAY, 4], [IRON, 4]]
+      weight: 0.31
+    - layout: [[CROP, 5], [WOOD, 5], [CLAY, 4], [IRON, 4]]
+      weight: 0.21
+    - layout: [[CROP, 5], [WOOD, 4], [CLAY, 5], [IRON, 4]]
+      weight: 0.21
+    - layout: [[CROP, 5], [WOOD, 4], [CLAY, 4], [IRON, 5]]
+      weight: 0.20
+
+capacities:
+  granary:
+    "0": 400
+    "1": 1700
+    "2": 3400
+    "3": 5100
+    "4": 6800
+    "5": 8500
+    "6": 10200
+    "7": 11900
+    "8": 13600
+    "9": 15300
+    "10": 17000
+  warehouse:
+    "0": 500
+    "1": 800
+    "2": 1550
+    "3": 2350
+    "4": 3200
+    "5": 4100
+    "6": 5050
+    "7": 6050
+    "8": 7100
+    "9": 8200
+    "10": 9350
