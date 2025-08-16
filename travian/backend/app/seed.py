@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 import app.db.models as db
 from app.core.crypto import get_password_hash  # No FastAPI import
+from app.core.config_loader import game_config
 
 fake = Faker()
 
@@ -82,56 +83,28 @@ def seed_admin_user(sess: Session) -> None:
     print(f"✅ Admin user created ({email} / admin123)")
 
 
-def seed_map_tiles(
-    sess: Session, size: int = 100, constructible_ratio: float = 0.9
-) -> None:
+def seed_map_tiles(sess: Session) -> None:
     if sess.query(db.MapTile).count() > 0:
         print("ℹ️ Map tiles already exist; skipping.")
         return
 
+    cfg = game_config["map_tile"]
+    size = cfg["size"]
+    constructible_ratio = cfg["constructible_ratio"]
+
+    # Build layout templates and weights from config
+    layout_templates = []
+    layout_weights = []
+    for layout_cfg in cfg["layouts"]:
+        template = [
+            (db.Resource[res], amt) for res, amt in layout_cfg["layout"]
+        ]
+        layout_templates.append(template)
+        layout_weights.append(layout_cfg["weight"])
+
     resource_types = {r.name: r for r in sess.query(db.ResourcesTypes).all()}
     if not resource_types:
         raise ValueError("Resources must be seeded before tiles.")
-
-    layout_templates = [
-        [
-            (db.Resource.CROP, 15),
-            (db.Resource.WOOD, 1),
-            (db.Resource.CLAY, 1),
-            (db.Resource.IRON, 1),
-        ],
-        [
-            (db.Resource.CROP, 9),
-            (db.Resource.WOOD, 3),
-            (db.Resource.CLAY, 3),
-            (db.Resource.IRON, 3),
-        ],
-        [
-            (db.Resource.CROP, 6),
-            (db.Resource.WOOD, 4),
-            (db.Resource.CLAY, 4),
-            (db.Resource.IRON, 4),
-        ],
-        [
-            (db.Resource.CROP, 5),
-            (db.Resource.WOOD, 5),
-            (db.Resource.CLAY, 4),
-            (db.Resource.IRON, 4),
-        ],
-        [
-            (db.Resource.CROP, 5),
-            (db.Resource.WOOD, 4),
-            (db.Resource.CLAY, 5),
-            (db.Resource.IRON, 4),
-        ],
-        [
-            (db.Resource.CROP, 5),
-            (db.Resource.WOOD, 4),
-            (db.Resource.CLAY, 4),
-            (db.Resource.IRON, 5),
-        ],
-    ]
-    layout_weights = [0.02, 0.05, 0.31, 0.21, 0.21, 0.20]
 
     layouts: list[db.MapTileResourceLayout] = []
     total_tiles = 0
@@ -173,37 +146,16 @@ def seed_warehouse_and_granary_capacity(sess: Session) -> None:
     existing_g = {c.level for c in sess.query(db.GranaryCapacity).all()}
     existing_w = {c.level for c in sess.query(db.WarehouseCapacity).all()}
 
-    granary_capacity_values = {
-        0: 400,
-        1: 1700,
-        2: 3400,
-        3: 5100,
-        4: 6800,
-        5: 8500,
-        6: 10200,
-        7: 11900,
-        8: 13600,
-        9: 15300,
-        10: 17000,
-    }
-    warehouse_capacity_values = {
-        0: 500,
-        1: 800,
-        2: 1550,
-        3: 2350,
-        4: 3200,
-        5: 4100,
-        6: 5050,
-        7: 6050,
-        8: 7100,
-        9: 8200,
-        10: 9350,
-    }
+    granary_capacity_values = game_config["capacities"]["granary"]
+    warehouse_capacity_values = game_config["capacities"]["warehouse"]
 
-    for level, cap in granary_capacity_values.items():
+    for level_str, cap in granary_capacity_values.items():
+        level = int(level_str)
         if level not in existing_g:
             sess.add(db.GranaryCapacity(level=level, capacity=cap))
-    for level, cap in warehouse_capacity_values.items():
+
+    for level_str, cap in warehouse_capacity_values.items():
+        level = int(level_str)
         if level not in existing_w:
             sess.add(db.WarehouseCapacity(level=level, capacity=cap))
 
@@ -219,7 +171,7 @@ def main() -> None:
         seed_resources(sess)
         seed_production(sess)
         seed_admin_user(sess)
-        seed_map_tiles(sess, size=100, constructible_ratio=0.9)
+        seed_map_tiles(sess)
         seed_warehouse_and_granary_capacity(sess)
         sess.commit()
         print("🌱 Seeding completed")

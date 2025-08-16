@@ -19,4 +19,5 @@ Faker==25.2.0
 python-dateutil
 alembic==1.13.1
 bcrypt==4.0.1
+pyyaml==6.0
 
