@@ -1,27 +1,35 @@
-from typing import Iterable, Dict
-from sqlalchemy.orm import Session
-from sqlalchemy import func
+# app/repositories/building_repo.py
+from __future__ import annotations
+from typing import Optional, Sequence, Dict
+from sqlalchemy.orm import Session, joinedload
+
 import app.db.models as db
 
 
-def building_code_to_type_id(db_sess: Session) -> Dict[str, int]:
-    rows = db_sess.query(db.BuildingType).all()
-    return {getattr(b.name, "value", b.name): b.id for b in rows}
+def fetch_building_catalog(
+    db_sess: Session, *, tribe_id: Optional[int] = None
+) -> Sequence[db.BuildingType]:
+    """
+    Return BuildingType ORM entities with levels, costs, and prerequisites
+    eagerly loaded to avoid N+1 queries.
+    """
+    q = db_sess.query(db.BuildingType).options(
+        joinedload(db.BuildingType.levels).joinedload(db.BuildingLevel.costs),
+        joinedload(db.BuildingType.levels)
+        .joinedload(db.BuildingLevel.prerequisites)
+        .joinedload(db.BuildingPrerequisite.required_building_type),
+    )
+    if tribe_id is not None:
+        q = q.filter(db.BuildingType.tribe_id == tribe_id)
+    return q.all()
 
 
-def insert_buildings(
-    db_sess: Session, village_id: int, specs: Iterable[tuple[int, int, int]]
-) -> None:
-    rows = []
-    for btype_id, level, instances in specs:
-        for i in range(1, instances + 1):
-            rows.append(
-                db.VillageBuilding(
-                    village_id=village_id,
-                    building_type_id=btype_id,
-                    instance_no=i,
-                    level=level,
-                )
-            )
-    if rows:
-        db_sess.bulk_save_objects(rows)
+def resources_enum_name_by_id(db_sess: Session) -> Dict[int, str]:
+    """
+    Map resource_type_id -> enum name string ("WOOD", "CLAY", ...).
+    Useful for building cost dicts in the service layer.
+    """
+    rows = db_sess.query(db.ResourcesTypes).all()
+    return {
+        r.id: r.name.name for r in rows
+    }  # r.name is Enum -> .name is "WOOD"
