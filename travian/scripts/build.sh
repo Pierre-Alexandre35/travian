@@ -10,14 +10,9 @@ until docker-compose exec -T postgres pg_isready -U pierre > /dev/null 2>&1; do
   sleep 1
 done
 
-echo "⬆️ Running migrations (upgrade head)..."
-docker-compose run --rm backend alembic upgrade head
-
-echo "📦 Generating new Alembic migration (optional)..."
-docker-compose run --rm backend alembic revision --autogenerate -m "init schema"
-
-echo "🚀 Re-applying migrations (in case you added new ones)..."
-docker-compose run --rm backend alembic upgrade head
+docker compose run --rm backend bash -lc "cd /app && python -m alembic upgrade head"
+docker compose run --rm backend bash -lc "cd /app && python -m alembic revision --autogenerate -m 'init schema'"
+docker compose run --rm backend bash -lc "cd /app && python -m alembic upgrade head"
 
 echo "🌱 Seeding initial data..."
 docker-compose run --rm backend python3 app/seed.py

@@ -104,6 +104,86 @@ The project is deployed on **Google Cloud Platform**:
 
 ---
 
+## ☁️ Backend structure
+
+.
+├── alembic.ini
+├── app
+│ ├── **init**.py
+│ ├── alembic
+│ │ ├── **init**.py
+│ │ ├── env.py
+│ │ ├── README
+│ │ ├── script.py.mako
+│ │ └── versions
+│ │ ├── 04cee76d7b4d_init_schema.py
+│ ├── alembic.ini
+│ ├── api
+│ │ ├── **init**.py
+│ │ ├── api_v1
+│ │ │ ├── **init**.py
+│ │ │ └── routers
+│ │ │ ├── **init**.py
+│ │ │ ├── auth.py
+│ │ │ ├── health.py
+│ │ │ ├── ressources.py
+│ │ │ ├── tests
+│ │ │ │ ├── **init**.py
+│ │ │ │ ├── test_auth.py
+│ │ │ │ └── test_users.py
+│ │ │ ├── tribes.py
+│ │ │ ├── users.py
+│ │ │ └── village.py
+│ │ └── dependencies
+│ │ └── **init**.py
+│ ├── core
+│ │ ├── **init**.py
+│ │ ├── auth.py
+│ │ ├── celery_app.py
+│ │ ├── config.py
+│ │ ├── crypto.py
+│ │ └── security.py
+│ ├── db
+│ │ ├── **init**.py
+│ │ ├── models.py
+│ │ └── session.py
+│ ├── main.py
+│ ├── repositories
+│ │ ├── **init**.py
+│ │ ├── building_repo.py
+│ │ ├── resource_repo.py
+│ │ ├── user_repo.py
+│ │ └── village_repo.py
+│ ├── sample_data.py
+│ ├── schemas
+│ │ ├── **init**.py
+│ │ ├── auth.py
+│ │ ├── base.py
+│ │ ├── building.py
+│ │ ├── map.py
+│ │ ├── resource.py
+│ │ ├── tribe.py
+│ │ ├── user.py
+│ │ └── village.py
+│ ├── seed.py
+│ ├── services
+│ │ ├── resource_service.py
+│ │ ├── user_service.py
+│ │ └── village_service.py
+│ ├── tasks.py
+│ └── tests
+│ ├── **init**.py
+│ ├── test_main.py
+│ └── test_tasks.py
+├── cloudbuild-migrate.yaml
+├── conftest.py
+├── Dockerfile
+├── Dockerfile.migrate
+├── poetry.lock
+├── pyproject.toml
+├── requirements-migrate.txt
+└── requirements.txt
+
 ## 🤝 Contributions
 
 I'm currently working on this project solo, and I’d love to collaborate—especially on the frontend.  

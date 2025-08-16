@@ -1,107 +1,106 @@
-from fastapi import APIRouter, Request, Depends, Response, encoders
-import typing as t
+# app/api/api_v1/routers/users.py
+from typing import List
+
+from fastapi import APIRouter, Request, Depends, Response
+from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.db.crud import (
-    get_users,
-    get_user,
-    create_user,
-    delete_user,
-    edit_user,
-)
-from app.db.schemas import UserCreate, UserEdit, User, UserOut
 from app.core.auth import get_current_active_user, get_current_active_superuser
+from app.schemas.user import UserCreate, UserEdit, UserOut
+from app.services import user_service
 
 users_router = r = APIRouter()
 
 
 @r.get(
     "/users",
-    response_model=t.List[User],
+    response_model=List[UserOut],
     response_model_exclude_none=True,
 )
-async def users_list(
+def users_list(
     response: Response,
-    db=Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Get all users
+    Get all users (admin)
     """
-    users = get_users(db)
-    # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(users)}"
+    users = user_service.list_users(db, skip=skip, limit=limit)
+
+    response.headers["Content-Range"] = (
+        f"{skip}-{skip + len(users) - 1}/{len(users)}"
+    )
     return users
 
 
-@r.get("/users/me", response_model=User, response_model_exclude_none=True)
-async def user_me(current_user=Depends(get_current_active_user)):
-    """
-    Get own user
-    """
-    return current_user
+@r.get("/users/me", response_model=UserOut)
+def user_me(current_user=Depends(get_current_active_user)):
+    return UserOut.model_validate(current_user)
 
 
 @r.get(
     "/users/{user_id}",
-    response_model=User,
+    response_model=UserOut,
     response_model_exclude_none=True,
 )
-async def user_details(
+def user_details(
     request: Request,
     user_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Get any user details
+    Get any user details (admin)
     """
-    user = get_user(db, user_id)
+    user = user_service.get_user(db, user_id)
     return user
-    # return encoders.jsonable_encoder(
-    #     user, skip_defaults=True, exclude_none=True,
-    # )
 
 
-@r.post("/users", response_model=User, response_model_exclude_none=True)
-async def user_create(
+@r.post("/users", response_model=UserOut, response_model_exclude_none=True)
+def user_create(
     request: Request,
     user: UserCreate,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Create a new user
+    Create a new user (admin)
     """
-    return create_user(db, user)
+    return user_service.create_user(db, user)
 
 
 @r.put(
-    "/users/{user_id}", response_model=User, response_model_exclude_none=True
+    "/users/{user_id}",
+    response_model=UserOut,
+    response_model_exclude_none=True,
 )
-async def user_edit(
+def user_edit(
     request: Request,
     user_id: int,
     user: UserEdit,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Update existing user
+    Update existing user (admin)
     """
-    return edit_user(db, user_id, user)
+    return user_service.edit_user(db, user_id, user)
 
 
 @r.delete(
-    "/users/{user_id}", response_model=User, response_model_exclude_none=True
+    "/users/{user_id}",
+    response_model=UserOut,
+    response_model_exclude_none=True,
 )
-async def user_delete(
+def user_delete(
     request: Request,
     user_id: int,
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """
-    Delete existing user
+    Delete existing user (admin)
     """
-    return delete_user(db, user_id)
+    return user_service.delete_user(db, user_id)
