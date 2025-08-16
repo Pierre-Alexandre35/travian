@@ -106,6 +106,7 @@ The project is deployed on **Google Cloud Platform**:
 
 ## ☁️ Backend structure
 
+```
 .
 ├── alembic.ini
 ├── app
@@ -183,6 +184,7 @@ The project is deployed on **Google Cloud Platform**:
 ├── pyproject.toml
 ├── requirements-migrate.txt
 └── requirements.txt
+```
 
 ## 🤝 Contributions
 
