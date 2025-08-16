@@ -23,7 +23,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     working_dir: /app
-    env_file: [backend/.env]
+    env_file: [backend/.env.local]
     environment:
       PYTHONPATH: /app
     depends_on:
@@ -37,7 +37,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     working_dir: /app
-    env_file: [backend/.env]
+    env_file: [backend/.env.local]
     environment:
       PYTHONPATH: /app
     command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
@@ -53,7 +53,7 @@ services:
       context: backend
       dockerfile: Dockerfile
     working_dir: /app
-    env_file: [backend/.env]
+    env_file: [backend/.env.local]
     environment:
       PYTHONPATH: /app
     command: celery --app app.tasks worker --loglevel=DEBUG -Q main-queue -c 1

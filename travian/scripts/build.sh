@@ -1,8 +1,31 @@
 #!/bin/bash
 set -e
 
+# Default env file
+ENV_FILE="backend/.env.local"
+
+# Parse CLI arguments
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -e|--env)
+      ENV_FILE="$2"
+      shift 2
+      ;;
+    *)
+      echo "❌ Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
 echo "🔧 Starting containers..."
-docker-compose up -d
+docker-compose --env-file "$ENV_FILE" up -d
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "⚠️  Env file '$ENV_FILE' not found, falling back to config.py defaults"
+else
+  echo "✅ Using env file: $ENV_FILE"
+fi
 
 echo "⏳ Waiting for Postgres to be ready inside Docker..."
 until docker-compose exec -T postgres pg_isready -U pierre > /dev/null 2>&1; do
