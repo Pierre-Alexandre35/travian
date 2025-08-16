@@ -163,6 +163,87 @@ def seed_warehouse_and_granary_capacity(sess: Session) -> None:
     print("✅ Granary & Warehouse capacities seeded")
 
 
+def seed_buildings(sess: Session) -> None:
+    if sess.query(db.BuildingType).count() > 0:
+        print("ℹ️ Buildings already exist; skipping.")
+        return
+
+    building_defs = game_config.get("buildings", [])
+
+    # Map enum names (e.g., "WOOD") → ResourcesTypes instance
+    resource_types = {
+        r.name.name: r for r in sess.query(db.ResourcesTypes).all()
+    }
+
+    # Map building names → BuildingType instance (as we create them)
+    building_type_by_name = {}
+
+    for b in building_defs:
+        btype = db.BuildingType(
+            name=b["name"],
+            description=b.get("description"),
+        )
+        sess.add(btype)
+        sess.flush()  # get btype.id
+        building_type_by_name[b["name"]] = btype
+
+        for level_def in b.get("levels", []):
+            population_required = level_def.get("population_required", 0)
+
+            lvl = db.BuildingLevel(
+                building_type_id=btype.id,
+                level=level_def["level"],
+                construction_time=level_def["time"],
+                population_required=population_required,
+            )
+            sess.add(lvl)
+            sess.flush()
+
+            # Seed resource costs
+            for res_name, amount in level_def["cost"].items():
+                if res_name not in resource_types:
+                    print("❌ Unknown resource name:", res_name)
+                    print(
+                        "🔍 Available resources:", list(resource_types.keys())
+                    )
+                    raise ValueError(f"Unknown resource: {res_name}")
+
+                lvl.costs.append(
+                    db.BuildingUpgradeResource(
+                        resource_type_id=resource_types[res_name].id,
+                        amount=amount,
+                    )
+                )
+
+            # Seed building prerequisites (optional)
+            for prereq in level_def.get("prerequisites", []):
+                prereq_name = prereq["building"]
+                required_level = prereq["level"]
+
+                # At this point in the loop, we may not have inserted the other building yet
+                # So query DB instead of relying on in-memory map
+                prereq_building = (
+                    sess.query(db.BuildingType)
+                    .filter_by(name=prereq_name)
+                    .first()
+                )
+
+                if not prereq_building:
+                    raise ValueError(
+                        f"❌ Unknown prerequisite building: {prereq_name}"
+                    )
+
+                lvl.prerequisites.append(
+                    db.BuildingPrerequisite(
+                        required_building_type_id=prereq_building.id,
+                        required_level=required_level,
+                    )
+                )
+
+    sess.flush()
+    print(f"✅ Seeded {len(building_defs)} building types and their levels")
+
+
 def main() -> None:
     sess = SessionLocal()
     print("🔍 DB URL:", sess.get_bind().engine.url)
@@ -173,6 +254,7 @@ def main() -> None:
         seed_admin_user(sess)
         seed_map_tiles(sess)
         seed_warehouse_and_granary_capacity(sess)
+        seed_buildings(sess)
         sess.commit()
         print("🌱 Seeding completed")
     except Exception as e:

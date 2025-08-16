@@ -40,3 +40,56 @@ capacities:
     "8": 7100
     "9": 8200
     "10": 9350
+
+buildings:
+  - name: "Main Building"
+    description: "Reduces construction time"
+    levels:
+      - level: 1
+        time: 60
+        cost: { WOOD: 70, CLAY: 40, IRON: 60, CROP: 20 }
+      - level: 2
+        time: 80
+        cost: { WOOD: 90, CLAY: 50, IRON: 75, CROP: 25 }
+
+  - name: "Warehouse"
+    description: "Stores wood, clay, and iron"
+    levels:
+      - level: 1
+        time: 50
+        population_required: 20
+        cost: { WOOD: 130, CLAY: 160, IRON: 90, CROP: 40 }
+      - level: 2
+        time: 65
+        population_required: 40
+        cost: { WOOD: 165, CLAY: 205, IRON: 120, CROP: 55 }
+
+  - name: "Granary"
+    description: "Stores crop"
+    levels:
+      - level: 1
+        time: 50
+        cost: { WOOD: 80, CLAY: 100, IRON: 70, CROP: 20 }
+      - level: 2
+        time: 65
+        cost: { WOOD: 100, CLAY: 125, IRON: 90, CROP: 30 }
+
+  - name: "Barracks"
+    description: "Trains infantry units"
+    levels:
+      - level: 1
+        time: 90
+        population_required: 50
+        cost: { WOOD: 210, CLAY: 140, IRON: 260, CROP: 120 }
+        prerequisites:
+          - building: "Main Building"
+            level: 2
+      - level: 2
+        time: 110
+        population_required: 80
+        cost: { WOOD: 270, CLAY: 180, IRON: 330, CROP: 160 }
+        prerequisites:
+          - building: "Main Building"
+            level: 3
+          - building: "Granary"
+            level: 2

@@ -286,6 +286,9 @@ class BuildingLevel(Base):
     )
 
     building_type = relationship("BuildingType", backref="levels")
+    population_required: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
 
     # one-to-many costs (Wood/Clay/Iron/Crop rows)
     costs = relationship(
@@ -297,6 +300,32 @@ class BuildingLevel(Base):
     __table_args__ = (
         UniqueConstraint(
             "building_type_id", "level", name="uq_building_type_level"
+        ),
+    )
+
+
+class BuildingPrerequisite(Base):
+    __tablename__ = "building_prerequisite"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    building_level_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("building_level.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    required_building_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("building_type.id"), nullable=False
+    )
+    required_level: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    building_level = relationship("BuildingLevel", backref="prerequisites")
+    required_building_type = relationship("BuildingType")
+
+    __table_args__ = (
+        UniqueConstraint(
+            "building_level_id",
+            "required_building_type_id",
+            name="uq_building_level_requirement",
         ),
     )
 

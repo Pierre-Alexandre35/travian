@@ -2,20 +2,29 @@ from typing import List, Optional
 from .base import AppBaseModel
 
 
-class BuildingTypeOut(AppBaseModel):
-    id: int
-    code: str
-    display_name: str
-    max_level: int
-    is_stackable: bool
+class ResourceCost(AppBaseModel):
+    resource_type: str  # e.g., "WOOD"
+    amount: int
+
+
+class BuildingPrerequisiteOut(AppBaseModel):
+    required_building: str  # building name
+    required_level: int
 
 
 class BuildingLevelOut(AppBaseModel):
-    building_type_id: int
     level: int
-    construction_time: int
+    time: int  # build time in seconds (or minutes depending on your logic)
+    cost: List[ResourceCost]
+    prerequisites: Optional[List[BuildingPrerequisiteOut]] = []
 
 
-class BuildingUpgradeCostOut(AppBaseModel):
-    resource_type: str
-    amount: int
+class BuildingTypeOut(AppBaseModel):
+    name: str
+    description: Optional[str] = None
+    levels: List[BuildingLevelOut]
+
+
+class BuildingCatalogOut(AppBaseModel):
+    tribe: Optional[str] = None  # only if you want to expose it
+    buildings: List[BuildingTypeOut]
