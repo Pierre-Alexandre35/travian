@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import TribeAttributes
-from app.db.schemas import TribeOut, TribeBase
+from app.schemas.tribe import TribeOut, TribeBase
 from app.core.auth import get_current_active_superuser
 
 tribes_router = APIRouter()

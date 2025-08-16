@@ -1,27 +1,20 @@
+# app/api/api_v1/routers/village.py
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
 from app.db.session import get_db
-from app.db.crud import (
-    create_user_village,
-    get_villages_by_owner_id,
-    get_village_by_id_and_owner,
-    get_village_by_name_and_owner,
-    get_village_production,
-)
-from app.db.schemas import (
+from app.services import village_service, resource_service
+from app.schemas.village import (
     VillageCreate,
     VillageOut,
     VillageProductionOut,
-    ResourceProduction,
+    VillageResourceOut,
 )
+from app.schemas.resource import ResourceProduction, ResourceBalance
 from app.core.auth import get_current_active_user
 from app.db.models import User
-
-from app.db.crud import get_village_current_resources
-from app.db.schemas import VillageResourceOut, ResourceBalance
-
 
 village_router = APIRouter()
 
@@ -37,7 +30,7 @@ async def village_create(
     """
     Create a new village for the current user.
     """
-    return create_user_village(db, village, owner_id=current_user.id)
+    return village_service.create_village(db, village, owner_id=current_user.id)
 
 
 @village_router.get(
@@ -52,7 +45,7 @@ async def list_user_villages(
     """
     List all villages owned by the current authenticated user.
     """
-    return get_villages_by_owner_id(db=db, owner_id=current_user.id)
+    return village_service.get_user_villages(db=db, owner_id=current_user.id)
 
 
 @village_router.get(
@@ -68,7 +61,9 @@ async def get_my_village(
     """
     Get a specific village owned by the current authenticated user.
     """
-    return get_village_by_id_and_owner(db, village_id, current_user.id)
+    return village_service.get_user_village_by_id(
+        db, village_id, current_user.id
+    )
 
 
 @village_router.get(
@@ -84,7 +79,9 @@ async def get_village_by_name(
     """
     Get a specific village by its unique name, owned by the current user.
     """
-    return get_village_by_name_and_owner(db, village_name, current_user.id)
+    return village_service.get_user_village_by_name(
+        db, village_name, current_user.id
+    )
 
 
 @village_router.get(
@@ -97,20 +94,11 @@ async def get_village_resource_production(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    # Get village for name & auth check
-    village = get_village_by_id_and_owner(db, village_id, current_user.id)
-
-    # Get raw production totals per resource type
-    raw_production = get_village_production(db, village_id, current_user.id)
-
-    # Construct validated response
-    return VillageProductionOut(
-        village_id=village.id,
-        village_name=village.name,
-        production=[
-            ResourceProduction(resource_type=res, total=int(total or 0))
-            for res, total in raw_production
-        ],
+    """
+    Get the resource production per hour for a specific village.
+    """
+    return village_service.get_village_production_summary(
+        db, village_id, current_user.id
     )
 
 
@@ -124,14 +112,9 @@ async def get_village_resource_balance(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    village = get_village_by_id_and_owner(db, village_id, current_user.id)
-    balances = get_village_current_resources(db, village_id, current_user.id)
-
-    return VillageResourceOut(
-        village_id=village.id,
-        village_name=village.name,
-        resources=[
-            ResourceBalance(resource_type=res, amount=amt)
-            for res, amt in balances
-        ],
+    """
+    Get the current balance of each resource type in a village (after accrual).
+    """
+    return resource_service.accrue_and_get_balances(
+        db_sess=db, village_id=village_id, owner_id=current_user.id
     )

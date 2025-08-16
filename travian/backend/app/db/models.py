@@ -252,3 +252,72 @@ class VillageResourceStorage(Base):
 
     village = relationship("Village", backref="resource_storage")
     resource_type = relationship("ResourcesTypes")
+
+
+class BuildingType(Base):
+    __tablename__ = "building_type"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(String(255))
+    # If buildings are tribe-specific, keep this; otherwise make it nullable.
+    tribe_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("tribe_attributes.id"), nullable=True
+    )
+    tribe = relationship("TribeAttributes")
+
+    # If names are global across tribes, set unique on name;
+    # if not, make (name, tribe_id) unique together:
+    __table_args__ = (
+        UniqueConstraint("name", "tribe_id", name="uq_buildingtype_name_tribe"),
+    )
+
+
+class BuildingLevel(Base):
+    __tablename__ = "building_level"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    building_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("building_type.id"), nullable=False
+    )
+    level: Mapped[int] = mapped_column(Integer, nullable=False)
+    construction_time: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0
+    )
+
+    building_type = relationship("BuildingType", backref="levels")
+
+    # one-to-many costs (Wood/Clay/Iron/Crop rows)
+    costs = relationship(
+        "BuildingUpgradeResource",
+        back_populates="building_level",
+        cascade="all, delete-orphan",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "building_type_id", "level", name="uq_building_type_level"
+        ),
+    )
+
+
+class BuildingUpgradeResource(Base):
+    __tablename__ = "building_upgrade_resource"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    building_level_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("building_level.id"), nullable=False, index=True
+    )
+    resource_type_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("resources_types.id"), nullable=False
+    )
+    amount: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    building_level = relationship("BuildingLevel", back_populates="costs")
+    resource_type = relationship("ResourcesTypes")
+
+    __table_args__ = (
+        UniqueConstraint(
+            "building_level_id", "resource_type_id", name="uq_building_upgrade"
+        ),
+    )

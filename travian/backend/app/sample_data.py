@@ -1,42 +1,68 @@
+# seed.py
 from faker import Faker
+
 from app.db.session import SessionLocal
-from app.db.crud import create_user, create_user_village
-from app.db.schemas import UserCreate, VillageCreate
-from app.db.models import TribeAttributes, Tribe, MapTile, Village
-from app.core.security import get_password_hash
+from app.services.user_service import create_user
+from app.services.village_service import create_village
+
+
+# ORM models & enums (aliased as `db` to prevent name collisions)
+import app.db.models as db
+
+# Pydantic DTOs
+from app.schemas.user import UserCreate
+from app.schemas.village import VillageCreate
+
 
 fake = Faker()
 
 
-def insert_fake_users_and_villages(db, count: int = 3):
-    tribe = db.query(TribeAttributes).filter_by(name=Tribe.ROMANS.value).first()
-    if not tribe:
-        raise ValueError("Romans tribe not found!")
+def insert_fake_users_and_villages(db_sess, count: int = 3) -> None:
+    """
+    Create `count` users and villages on free map tiles.
+    - Chooses the Romans tribe for all created users.
+    - Uses Faker for random emails/cities/populations.
+    """
 
-    created = 0
+    # Find the Romans tribe (db.Tribe is your SQLAlchemy Enum)
+    romans = (
+        db_sess.query(db.TribeAttributes)
+        .filter_by(name=db.Tribe.ROMANS.value)
+        .first()
+    )
+    if not romans:
+        raise ValueError("Romans tribe not found! Seed your tribes first.")
 
+    # Grab `count` free tiles (no village assigned)
     free_tiles = (
-        db.query(MapTile)
-        .outerjoin(Village, MapTile.id == Village.map_tile_id)
-        .filter(Village.id == None)
+        db_sess.query(db.MapTile)
+        .outerjoin(db.Village, db.MapTile.id == db.Village.map_tile_id)
+        .filter(db.Village.id.is_(None))
         .limit(count)
         .all()
     )
 
+    if not free_tiles:
+        print("ℹ️  No free tiles available.")
+        return
+
+    created = 0
     for tile in free_tiles:
+        # Create user
         user = create_user(
-            db,
+            db_sess,
             UserCreate(
                 email=fake.unique.email(),
                 password=fake.password(length=12),
                 is_active=True,
                 is_superuser=fake.boolean(chance_of_getting_true=10),
-                tribe_id=tribe.id,
+                tribe_id=romans.id,
             ),
         )
 
-        create_user_village(
-            db,
+        # Create village for that user on this free tile
+        create_village(
+            db_sess,
             VillageCreate(
                 name=fake.city(),
                 map_tile_id=tile.id,
@@ -44,14 +70,15 @@ def insert_fake_users_and_villages(db, count: int = 3):
             ),
             owner_id=user.id,
         )
+
         created += 1
 
-    print(f"✅ {created} villages created.")
+    print(f"✅ {created} village(s) created.")
 
 
 if __name__ == "__main__":
-    db = SessionLocal()
+    db_sess = SessionLocal()
     try:
-        insert_fake_users_and_villages(db, count=3)
+        insert_fake_users_and_villages(db_sess, count=3)
     finally:
-        db.close()
+        db_sess.close()

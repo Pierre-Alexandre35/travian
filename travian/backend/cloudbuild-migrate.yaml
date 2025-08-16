@@ -1,0 +1,41 @@
+# backend/cloudbuild-migrate.yaml
+
+steps:
+  # 1) Build the migration image with TWO tags: BUILD_ID and latest
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "-f"
+      - "Dockerfile.migrate"
+      - "-t"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:$BUILD_ID"
+      - "-t"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:latest"
+      - "."
+
+  # 2) Push BOTH tags up to Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:$BUILD_ID"
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:latest"
+
+  # 3) Update & execute the job (which now can reference :latest)
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud run jobs update alembic-migrate \
+          --region=europe-west1 \
+          --image=europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:$BUILD_ID
+
+        gcloud run jobs execute alembic-migrate \
+          --region=europe-west1
+
+images:
+  - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:$BUILD_ID"
+  - "europe-west1-docker.pkg.dev/$PROJECT_ID/migrations/alembic-migrate:latest"

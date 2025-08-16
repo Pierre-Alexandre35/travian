@@ -54,7 +54,7 @@ API Documentation
 
 You can explore and test the API via Swagger UI:
 
-http://localhost:8000/api/docs#/
+`http://localhost:8080/api/docs`
 
 ---
 
@@ -104,6 +104,86 @@ The project is deployed on **Google Cloud Platform**:
 
 ---
 
+## ☁️ Backend structure
+
+.
+├── alembic.ini
+├── app
+│ ├── **init**.py
+│ ├── alembic
+│ │ ├── **init**.py
+│ │ ├── env.py
+│ │ ├── README
+│ │ ├── script.py.mako
+│ │ └── versions
+│ │ ├── 04cee76d7b4d_init_schema.py
+│ ├── alembic.ini
+│ ├── api
+│ │ ├── **init**.py
+│ │ ├── api_v1
+│ │ │ ├── **init**.py
+│ │ │ └── routers
+│ │ │ ├── **init**.py
+│ │ │ ├── auth.py
+│ │ │ ├── health.py
+│ │ │ ├── ressources.py
+│ │ │ ├── tests
+│ │ │ │ ├── **init**.py
+│ │ │ │ ├── test_auth.py
+│ │ │ │ └── test_users.py
+│ │ │ ├── tribes.py
+│ │ │ ├── users.py
+│ │ │ └── village.py
+│ │ └── dependencies
+│ │ └── **init**.py
+│ ├── core
+│ │ ├── **init**.py
+│ │ ├── auth.py
+│ │ ├── celery_app.py
+│ │ ├── config.py
+│ │ ├── crypto.py
+│ │ └── security.py
+│ ├── db
+│ │ ├── **init**.py
+│ │ ├── models.py
+│ │ └── session.py
+│ ├── main.py
+│ ├── repositories
+│ │ ├── **init**.py
+│ │ ├── building_repo.py
+│ │ ├── resource_repo.py
+│ │ ├── user_repo.py
+│ │ └── village_repo.py
+│ ├── sample_data.py
+│ ├── schemas
+│ │ ├── **init**.py
+│ │ ├── auth.py
+│ │ ├── base.py
+│ │ ├── building.py
+│ │ ├── map.py
+│ │ ├── resource.py
+│ │ ├── tribe.py
+│ │ ├── user.py
+│ │ └── village.py
+│ ├── seed.py
+│ ├── services
+│ │ ├── resource_service.py
+│ │ ├── user_service.py
+│ │ └── village_service.py
+│ ├── tasks.py
+│ └── tests
+│ ├── **init**.py
+│ ├── test_main.py
+│ └── test_tasks.py
+├── cloudbuild-migrate.yaml
+├── conftest.py
+├── Dockerfile
+├── Dockerfile.migrate
+├── poetry.lock
+├── pyproject.toml
+├── requirements-migrate.txt
+└── requirements.txt
+
 ## 🤝 Contributions
 
 I'm currently working on this project solo, and I’d love to collaborate—especially on the frontend.  
@@ -120,7 +200,7 @@ POST: request body
 ## 🛠️ Bugs / Design Questions
 
 - Not every tiles have a layout and they should (curl -X 'POST' \
-  'http://localhost:8000/api/villages' )
+  'http://localhost:8080/api/villages' )
 
 ```
 404:
@@ -130,3 +210,73 @@ POST: request body
 ```
 
 - Recalculate user ressources using a middleware?
+
+gcloud auth application-default login
+
+TODO:
+
+1. Add a cloudbuild.yaml
+   At the repo root, create a cloudbuild.yaml:
+
+yaml
+Copy
+Edit
+steps:
+
+# 1) Build & push to Artifact Registry (AMD64)
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '--platform=linux/amd64'
+  - '-t'
+  - 'europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA'
+  - './backend'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'push'
+  - 'europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA'
+
+# 2) Deploy to Cloud Run
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args: - '-c' - |
+  gcloud run deploy ${SERVICE} \
+        --image=europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA \
+        --region=${REGION} \
+   --platform=managed \
+   --allow-unauthenticated \
+   --set-env-vars DATABASE_URL=${DATABASE_URL}
+  substitutions:
+  \_SERVICE: backend-service
+  \_REGION: europe-west9
+  \_DATABASE_URL: postgresql://pierre:password@34.163.113.47:5432/pierre?sslmode=require
+  images:
+  - 'europe-west9-docker.pkg.dev/${PROJECT}/backend-repo/backend:$SHORT_SHA'
+
+2. Define a Cloud Build trigger in Terraform
+   Add a new module or resource in your iac/:
+
+hcl
+Copy
+Edit
+resource "google_cloudbuild_trigger" "backend" {
+project = var.project
+name = "backend-deploy-trigger"
+
+github {
+owner = "YOUR_GITHUB_ORG"
+name = "YOUR_REPO_NAME"
+push {
+branch = "main"
+}
+}
+
+filename = "cloudbuild.yaml"
+}
+
+docker build --platform linux/amd64 -t europe-west9-docker.pkg.dev/vallorium-core-prod/backend-repo/backend:latest travian/backend/
+gcloud auth configure-docker europe-west9-docker.pkg.dev \
+ --project=vallorium-core-prod
+docker push europe-west9-docker.pkg.dev/vallorium-core-prod/backend-repo/backend:latest
