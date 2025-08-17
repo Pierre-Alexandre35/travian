@@ -50,3 +50,25 @@ variable "image_name" {
   description = "Docker image name in the Artifact Registry repo"
   type        = string
 }
+
+
+variable "database_url" {
+  type        = string
+  description = "PostgreSQL database connection string"
+}
+
+variable "celery_broker_url" {
+  type        = string
+  description = "Redis URL for Celery broker"
+}
+
+variable "secret_key" {
+  type        = string
+  description = "Secret key for FastAPI app"
+}
+
+variable "debug" {
+  type        = string
+  default     = "false"
+  description = "Set to true to enable debug mode"
+}
