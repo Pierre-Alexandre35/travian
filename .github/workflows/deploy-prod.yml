@@ -7,7 +7,7 @@ on:
 env:
   PROJECT_ID: vallorium
   REGION: europe-west9
-  REPOSITORY_ID: api
+  REPOSITORY_ID: backend-repo # must match CI
   IMAGE_NAME: fastapi
 
 jobs:
