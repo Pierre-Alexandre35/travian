@@ -45,3 +45,8 @@ variable "create_repo" {
   default = true
   # NEW
 }
+
+variable "image_name" {
+  description = "Docker image name in the Artifact Registry repo"
+  type        = string
+}
