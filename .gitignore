@@ -13,7 +13,7 @@
 ######################
 
 # Secrets
-**/.tfvars/*
+#**/.tfvars/*
 
 # Local .terraform directories
 **/.terraform/*
