@@ -39,7 +39,7 @@ jobs:
 
       - name: Build & Push Docker Image
         run: |
-          docker build -t $IMAGE:${{ github.sha }} .
+          docker build -t $IMAGE:${{ github.sha }} ./backend
           docker push $IMAGE:${{ github.sha }}
 
       - name: Terraform Deploy to Cloud Run

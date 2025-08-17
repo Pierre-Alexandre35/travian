@@ -19,6 +19,10 @@ module "apis" {
   apis    = var.apis
 }
 
+module "github_wif" {
+  source  = "../modules/github_wif"
+  project = var.project
+}
 
 output "enabled_apis" {
   value = sort(tolist(var.apis))
