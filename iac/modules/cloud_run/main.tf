@@ -16,28 +16,26 @@ resource "google_cloud_run_v2_service" "service" {
       ports {
         container_port = 8080
       }
+
+      env {
+        name  = "DATABASE_URL"
+        value = var.database_url
+      }
+
+      env {
+        name  = "CELERY_BROKER_URL"
+        value = var.celery_broker_url
+      }
+
+      env {
+        name  = "SECRET_KEY"
+        value = var.secret_key
+      }
+
+      env {
+        name  = "DEBUG"
+        value = var.debug
+      }
     }
   }
-}
-
-
-# (Optional) Allow unauthenticated access if desired
-resource "google_cloud_run_v2_service_iam_member" "invoker_all" {
-  count   = var.allow_unauth ? 1 : 0
-  project = var.project
-  location = var.region
-  name     = google_cloud_run_v2_service.service.name
-
-  role   = "roles/run.invoker"
-  member = "allUsers"
-}
-
-# Artifact Registry repo — create only if asked (e.g., first run)
-resource "google_artifact_registry_repository" "repo" {
-  count         = var.create_repo ? 1 : 0
-  project       = var.project
-  location      = var.region
-  repository_id = var.repository_id   # <- no hardcode; must match CI (e.g., "api")
-  format        = "DOCKER"
-  description   = "Docker repo for backend images"
 }

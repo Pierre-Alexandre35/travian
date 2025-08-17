@@ -10,3 +10,9 @@ max_instances = 2
 
 allow_unauth  = true
 create_repo   = true
+
+
+database_url      = "postgresql+psycopg://pierre:password@postgres:5432/pierre"
+celery_broker_url = "redis://redis:6379/0"
+secret_key        = "dev-secret"
+debug             = "true"

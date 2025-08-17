@@ -49,3 +49,24 @@ variable "create_repo" {
   type    = bool
   default = true
 }
+
+variable "database_url" {
+  type        = string
+  description = "PostgreSQL database connection string"
+}
+
+variable "celery_broker_url" {
+  type        = string
+  description = "Redis URL for Celery broker"
+}
+
+variable "secret_key" {
+  type        = string
+  description = "Secret key for application"
+}
+
+variable "debug" {
+  type        = string
+  description = "Enable debug mode"
+  default     = "false"
+}
