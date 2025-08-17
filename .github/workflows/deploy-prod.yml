@@ -34,8 +34,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }} .
-          docker push europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }}
+          docker build -t europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }} ./vallorium/backend
+          docker push  europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3

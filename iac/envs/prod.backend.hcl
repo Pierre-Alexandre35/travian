@@ -1,2 +1,2 @@
-bucket  = "your-terraform-state-bucket"
+bucket  = "tfstate-vallorium-eu"
 prefix  = "prod"
