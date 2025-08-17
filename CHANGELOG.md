@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial changelog structure.
+- Nothing yet.
 
 ### Changed
 
@@ -30,3 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Nothing yet.
+
+---
+
+## [0.2.0] - 2025-08-16
+
+### Changed
+
+- Switched API payloads to expose `resource_type` as a human-readable string (e.g., `"WOOD"`) instead of an internal integer ID.
+  This change follows best practices discussed in Mark Seemann’s blog, favoring clarity and stability in BFF-style APIs where a frontend is the primary consumer.
+
+---
+
+## [0.1.0] - 2025-08-15
+
+### Added
+
+- Initial changelog structure.

@@ -26,7 +26,7 @@ Please note this will only run the back-end that is still in development.
 ⚠️ **Docker** is required to launch the server. Build and start the application using:
 
 ```
-cd travian
+cd vallorium
 ./scripts/build.sh
 ```
 
@@ -278,7 +278,7 @@ branch = "main"
 filename = "cloudbuild.yaml"
 }
 
-docker build --platform linux/amd64 -t europe-west9-docker.pkg.dev/vallorium-core-prod/backend-repo/backend:latest travian/backend/
+docker build --platform linux/amd64 -t europe-west9-docker.pkg.dev/vallorium-core-prod/backend-repo/backend:latest vallorium/backend/
 gcloud auth configure-docker europe-west9-docker.pkg.dev \
  --project=vallorium-core-prod
 docker push europe-west9-docker.pkg.dev/vallorium-core-prod/backend-repo/backend:latest

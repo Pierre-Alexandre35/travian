@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: travian/frontend
+        working-directory: vallorium/frontend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: travian/backend
+        working-directory: vallorium/backend
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: travian/database/sql
+        working-directory: vallorium/database/sql
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3

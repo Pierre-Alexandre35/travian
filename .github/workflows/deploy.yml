@@ -20,11 +20,11 @@ jobs:
           node-version: "18" # Ensure the correct Node.js version
 
       - name: Install dependencies
-        working-directory: travian/frontend # Change to frontend directory
+        working-directory: vallorium/frontend # Change to frontend directory
         run: npm install
 
       - name: Build project
-        working-directory: travian/frontend # Change to frontend directory
+        working-directory: vallorium/frontend # Change to frontend directory
         run: npm run build
 
       - name: Authenticate to GCP
@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload to GCS
         run: |
-          gsutil -m rsync -r travian/frontend/dist gs://vallorium.com
+          gsutil -m rsync -r vallorium/frontend/dist gs://vallorium.com
 
       - name: Make GCS objects public
         run: gsutil iam ch allUsers:objectViewer gs://vallorium.com
