@@ -45,9 +45,13 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
+        working-directory: iac
         run: terraform init -backend-config=envs/prod.backend.hcl
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve \
-          -var-file=envs/prod.tfvars \
-          -var="image_tag=${{ github.sha }}"
+        working-directory: iac
+        run: |
+          terraform apply \
+            -auto-approve \
+            -var-file=envs/prod.tfvars \
+            -var="image_tag=${{ github.sha }}"
