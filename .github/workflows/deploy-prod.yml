@@ -1,53 +1,49 @@
-name: Deploy to Production
+name: Deploy FastAPI to Cloud Run
 
 on:
   push:
-    branches: [main] # only deploy from main
+    branches: [main]
 
 env:
   PROJECT_ID: vallorium
   REGION: europe-west9
-  REPO: backend-repo
-  IMAGE: europe-west9-docker.pkg.dev/vallorium/backend-repo/fastapi
+  REPOSITORY_ID: api
+  IMAGE_NAME: fastapi
 
 jobs:
   deploy:
-    name: Build & Deploy to Cloud Run
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # for OIDC/WIF
-      contents: read
 
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
+      - name: Set up gcloud auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_DEPLOYER_SA }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOY_SA_EMAIL }}
 
-      - name: Set up gcloud
+      - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker for Artifact Registry
-        run: |
-          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+        run: gcloud auth configure-docker europe-west9-docker.pkg.dev
 
-      - name: Build & Push Docker Image
-        working-directory: vallorium
+      - name: Build and Push Docker Image
         run: |
-          docker build -t $IMAGE:${{ github.sha }} ./backend
-          docker push $IMAGE:${{ github.sha }}
+          docker build -t europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }} ./vallorium/backend
+          docker push  europe-west9-docker.pkg.dev/$PROJECT_ID/$REPOSITORY_ID/$IMAGE_NAME:${{ github.sha }}
 
-      - name: Terraform Deploy to Cloud Run
-        working-directory: iac
-        run: |
-          terraform init -backend-config=envs/prod.backend.hcl
-          terraform apply \
-            -auto-approve \
-            -var-file=envs/prod.tfvars \
-            -var="image_tag=${{ github.sha }}"
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -backend-config=envs/prod.backend.hcl
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve \
+          -var-file=envs/prod.tfvars \
+          -var="image_tag=${{ github.sha }}"
