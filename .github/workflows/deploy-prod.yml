@@ -1,0 +1,52 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main] # only deploy from main
+
+env:
+  PROJECT_ID: vallorium
+  REGION: europe-west9
+  REPO: api
+  IMAGE: europe-west9-docker.pkg.dev/vallorium/api/fastapi
+
+jobs:
+  deploy:
+    name: Build & Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # for OIDC/WIF
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build & Push Docker Image
+        run: |
+          docker build -t $IMAGE:${{ github.sha }} .
+          docker push $IMAGE:${{ github.sha }}
+
+      - name: Terraform Deploy to Cloud Run
+        working-directory: iac
+        run: |
+          terraform init -backend-config=envs/prod.backend.hcl
+          terraform apply \
+            -auto-approve \
+            -var-file=envs/prod.tfvars \
+            -var="image_tag=${{ github.sha }}"

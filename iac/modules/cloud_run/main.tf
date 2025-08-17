@@ -1,24 +1,31 @@
-resource "google_cloud_run_service" "service" {
-  name     = var.name
+resource "google_cloud_run_v2_service" "service" {
+  name     = var.service_name
   location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
-    spec {
-      containers {
-        image = var.image
+    service_account = var.service_account_email # optional, can omit
 
-        # Tell Cloud Run which port your container listens on:
-        ports {
-          container_port = 8080
-        }
+    scaling {
+      min_instance_count = var.min_instances
+      max_instance_count = var.max_instances
+    }
 
-        # (Do NOT set PORT here — Cloud Run will inject it automatically)
-      }
+
+    containers {
+      image = "europe-west9-docker.pkg.dev/${var.project}/${var.repository_id}/fastapi:${var.image_tag}"
+
+      ports { container_port = 8080 }
     }
   }
+}
 
-  traffic {
-    percent         = 100
-    latest_revision = true
-  }
+
+resource "google_artifact_registry_repository" "backend" {
+  project        = var.project
+  location       = var.region
+  repository_id  = "backend-repo"
+  format         = "DOCKER"
+  description    = "Docker repo for backend images"
+  # depends_on    = [google_project_service.artifactregistry]  # optional if ordering is guaranteed elsewhere
 }
