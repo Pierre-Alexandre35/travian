@@ -39,3 +39,12 @@ resource "google_cloud_run_v2_service" "service" {
     }
   }
 }
+
+resource "google_artifact_registry_repository" "repo" {
+  count         = var.create_repo ? 1 : 0
+  project       = var.project
+  location      = var.region
+  repository_id = var.repository_id   # "api", "backend-repo", etc.
+  format        = "DOCKER"
+  description   = "Docker repo for backend images"
+}
