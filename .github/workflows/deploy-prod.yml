@@ -8,7 +8,7 @@ env:
   PROJECT_ID: vallorium
   REGION: europe-west9
   REPOSITORY_ID: api # <- match Terraform
-  IMAGE_NAME: fastapi
+  IMAGE_NAME: backend
 
 jobs:
   deploy:
