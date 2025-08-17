@@ -26,6 +26,10 @@ module "api" {
   allow_unauth          = var.allow_unauth
   create_repo           = var.create_repo
   service_account_email = var.service_account_email
+  database_url         = var.database_url
+  celery_broker_url    = var.celery_broker_url
+  secret_key           = var.secret_key
+  debug                = var.debug
 }
 
 output "api_endpoint" {
