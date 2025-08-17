@@ -4,7 +4,6 @@ resource "google_cloud_run_v2_service" "service" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
-    # Optional; if null, Cloud Run will use the default compute SA
     service_account = var.service_account_email
 
     scaling {
@@ -13,12 +12,14 @@ resource "google_cloud_run_v2_service" "service" {
     }
 
     containers {
-      # Use the repo you pass in (e.g., "api") and the CI-provided tag
-      image = "europe-west9-docker.pkg.dev/${var.project}/${var.repository_id}/fastapi:${var.image_tag}"
-      ports { container_port = 8080 }
+      image = "europe-west9-docker.pkg.dev/${var.project}/${var.repository_id}/${var.image_name}:${var.image_tag}"
+      ports {
+        container_port = 8080
+      }
     }
   }
 }
+
 
 # (Optional) Allow unauthenticated access if desired
 resource "google_cloud_run_v2_service_iam_member" "invoker_all" {

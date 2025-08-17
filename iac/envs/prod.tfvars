@@ -5,4 +5,5 @@ repository_id = "api"         # must match CI
 min_instances = 1
 max_instances = 2
 allow_unauth  = true
-create_repo   = true   
+create_repo   = true
+image_name = "backend" 
