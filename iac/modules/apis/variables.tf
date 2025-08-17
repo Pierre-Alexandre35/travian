@@ -1,9 +1,8 @@
 variable "project" {
-  type        = string
-  description = "GCP project to enable APIs in"
+  type = string
 }
 
 variable "apis" {
-  type        = list(string)
-  description = "List of API service names to enable"
+  description = "APIs to enable"
+  type        = set(string)
 }

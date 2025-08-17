@@ -1,4 +1,4 @@
 output "endpoint" {
   description = "Cloud Run service URL"
-  value       = google_cloud_run_service.service.status[0].url
+  value       = google_cloud_run_v2_service.service.uri
 }

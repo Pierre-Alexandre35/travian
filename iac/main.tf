@@ -1,59 +1,32 @@
-module "project_apis" {
-  source  = "./modules/apis"
-  project = var.project
-  apis    = [
-    "run.googleapis.com",
-    "compute.googleapis.com",
-    "artifactregistry.googleapis.com",
-    "secretmanager.googleapis.com",
-    "cloudbuild.googleapis.com"   # Enable Cloud Build API for triggers
-  ]
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.0"
+    }
+  }
 }
 
-# 2) Provision Artifact Registry and IAM for pulling images
-module "registry" {
-  source  = "./modules/registry"
+provider "google" {
   project = var.project
   region  = var.region
 }
 
-# 3) Deploy Cloud Run service for the API
-module "cloud_run" {
-  source = "./modules/cloud_run"
-
-  name   = var.api_name
-  region = var.region
-  image  = "europe-west9-docker.pkg.dev/${var.project}/backend-repo/backend:latest"
-
-  depends_on = [
-    module.project_apis,
-    module.registry,
-  ]
+module "api" {
+  source         = "./modules/cloud_run"
+  project        = var.project
+  region         = var.region
+  service_name   = var.service_name
+  repository_id  = var.repository_id
+  image_tag      = var.image_tag
+  min_instances  = var.min_instances
+  max_instances  = var.max_instances
+  allow_unauth   = var.allow_unauth
+  # If your repo already exists (bootstrap), set this false:
+  # create_repo   = false
+  # service_account_email = "api-runtime@${var.project}.iam.gserviceaccount.com"
 }
 
-module "ci_trigger" {
-  source       = "./modules/ci_trigger"
-  project      = var.project
-  github_owner = var.github_owner
-  github_repo  = var.github_repo
-  branch       = "main"            # or override
-  filename     = "cloudbuild.yaml" # since you moved it to root
-  depends_on = [
-    module.project_apis,
-    module.registry,
-  ]
-}
-
-// --------------------------------------------------
-// Read existing static DB IP and expose as output
-// --------------------------------------------------
-data "google_compute_address" "db" {
-  name    = "db-static-ip"
-  region  = var.region
-  project = var.project
-}
-
-output "db_ip" {
-  description = "Static external IP for the Postgres VM"
-  value       = data.google_compute_address.db.address
+output "api_endpoint" {
+  value = module.api.endpoint
 }
