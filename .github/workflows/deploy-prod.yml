@@ -8,7 +8,7 @@ env:
   PROJECT_ID: vallorium
   REGION: europe-west9
   REPO: backend-repo
-  IMAGE: europe-west9-docker.pkg.dev/vallorium/api/fastapi
+  IMAGE: europe-west9-docker.pkg.dev/vallorium/backend-repo/fastapi
 
 jobs:
   deploy:
