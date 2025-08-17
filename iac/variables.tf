@@ -12,7 +12,12 @@ variable "service_name" {
 
 variable "repository_id" {
   type = string
-  # e.g., "api"
+  # e.g., "backend-repo"
+}
+
+variable "image_name" {
+  description = "Name of the Docker image (e.g., fastapi)"
+  type        = string
 }
 
 variable "image_tag" {

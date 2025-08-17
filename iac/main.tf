@@ -13,21 +13,18 @@ provider "google" {
 }
 
 module "api" {
-  source               = "./modules/cloud_run"
+  source                = "./modules/cloud_run"
 
-  project              = var.project
-  region               = var.region
-  service_name         = var.service_name
-  repository_id        = var.repository_id
-  image_tag            = var.image_tag
-  min_instances        = var.min_instances
-  max_instances        = var.max_instances
-  allow_unauth         = var.allow_unauth
-
-  # NEW: wire through
-  create_repo          = var.create_repo
-
-  # Optional: if you later use a dedicated runtime SA
+  project               = var.project
+  region                = var.region
+  service_name          = var.service_name
+  repository_id         = var.repository_id
+  image_name            = var.image_name  
+  image_tag             = var.image_tag 
+  min_instances         = var.min_instances
+  max_instances         = var.max_instances
+  allow_unauth          = var.allow_unauth
+  create_repo           = var.create_repo
   service_account_email = var.service_account_email
 }
 
